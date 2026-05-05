@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "es2022",
+        "lib": [
+            "ES6",
+            "ESNext",
+            "ESNext.BigInt"
+        ],
+        "noEmit": true,
+        "removeComments": true,
+        "strict": true,
+        "rootDir": "./src",
+        "typeRoots": [
+            "./src/@types/*",
+            "node_modules/@types"
+        ],
+        "types": [
+            "node"
+        ],
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": ["./*"]
+        }
+    },
+    "include": [
+        "src/**/*.ts",
+    ],
+    "exclude": [
+        "build",
+        "node_modules",
+        "package-lock.json",
+        "package.json"
+    ]
+}
