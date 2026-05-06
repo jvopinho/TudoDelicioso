@@ -17,7 +17,9 @@
   "devDependencies": {
     "@eslint/js": "^9.38.0",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.6.0",
     "eslint": "^9.38.0",
     "eslint-plugin-import-helpers": "^2.0.1",
@@ -28,9 +30,12 @@
     "typescript-eslint": "^8.59.0"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "zod": "^4.4.3"
   }
 }
