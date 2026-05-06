@@ -1,7 +1,7 @@
 import { PasswordAdapter } from '@/adapters/password-adapter'
 import { User } from '@/models/user'
 
-const hashedPassword = await PasswordAdapter.hashPassword('1234')
+const hashedPassword = await PasswordAdapter.hashPassword('123456')
 
 export class UsersRepository {
   private data: User[] = [
