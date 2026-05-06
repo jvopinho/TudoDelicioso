@@ -18,6 +18,10 @@ export class UsersRepository {
     UsersRepository.instance = this
   }
 
+  async create(data: User): Promise<void> {
+    this.data.push(data)
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     return this.data.find(user => user.email === email) ?? null
   }
