@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express'
+import { NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
-import { AppRequest, AuthenticatedRequest } from '@/@types/express'
+import { AppRequest, AppResponse, AuthenticatedRequest } from '@/@types/express'
 import { env } from '@/env'
 import { User } from '@/models/user'
 import { UsersRepository } from '@/repositories'
@@ -56,9 +56,9 @@ export function AuthMiddleware({ onlyAuthenticated = true, onlyAdmin = false }: 
   }
   
   return (_this: any, methodName: string, descriptor: PropertyDescriptor) => {
-    const originalMethod = descriptor.value as RequestHandler
+    const originalMethod = descriptor.value
 
-    descriptor.value = async function (req: AppRequest, res, ...args) {
+    descriptor.value = async function (req: AppRequest, res: AppResponse, next: NextFunction) {
       const [authenticated, result] = await authenticate(req)
 
       if(!authenticated && onlyAuthenticated) {
@@ -79,7 +79,7 @@ export function AuthMiddleware({ onlyAuthenticated = true, onlyAdmin = false }: 
         return res.status(403).json({ message: 'Forbidden' })
       }
 
-      return originalMethod.call(_this, req, res, ...args)
-    } as RequestHandler
+      return originalMethod.call(this, req, res, next)
+    }
   }
 }

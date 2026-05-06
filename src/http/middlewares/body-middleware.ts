@@ -18,7 +18,7 @@ export function BodyMiddleware(schema: ZodSchema) {
 
       req.body = validationResult.data
 
-      return originalMethod.call(_this, req, res, ...args)
+      return originalMethod.call(this, req, res, ...args)
     }
   }
 }
