@@ -1,11 +1,19 @@
 import { randomUUID } from 'node:crypto'
 
+import { createEnum, enumInfer } from '@/utils/create-enum'
+
+export const UserRole = createEnum([
+  'ADMIN',
+  'STUDENT',
+] as const)
+export type UserRole = enumInfer<typeof UserRole>
+
 export interface UserDBO {
   id: string
   name: string
   email: string
   password_hash: string
-  role: 'ADMIN' | 'COMMON'
+  role: UserRole
 }
 
 export class User {
@@ -17,11 +25,11 @@ export class User {
 
   private passwordHash: string
 
-  role: 'ADMIN' | 'COMMON'
+  role: UserRole
 
   constructor(data: Optional<UserDBO, 'id' | 'role'>) {
     this.id = data.id ?? randomUUID()
-    this.role = data.role ?? 'COMMON'
+    this.role = data.role ?? UserRole.STUDENT
 
     this.name = data.name
     this.email = data.email
