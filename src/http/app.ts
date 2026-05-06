@@ -4,6 +4,8 @@ import express from 'express'
 
 import { env } from '@/env'
 
+import { apiRoute } from './routes/api/index.route'
+
 export const app = express()
 
 app.set('view engine', 'ejs')
@@ -13,6 +15,8 @@ app.use(express.json())
 app.get('/', (req, res) => {
   res.render('main', { title: 'Tudo Delicioso' })
 })
+
+app.use('/api', apiRoute)
 
 export function startServer() {
   app.listen(env.PORT, env.HOST, () => {
