@@ -5,7 +5,7 @@ import { PasswordAdapter } from '@/adapters/password-adapter'
 import { env } from '@/env'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
 import { UsersRepository } from '@/repositories/users-repository'
-import { SignInDTO } from '@/schemas/sign-in-schema'
+import { SignInDTO } from '@/schemas/auth-dto'
 
 export class AuthController {
   constructor(private readonly usersRepository: UsersRepository) {}
