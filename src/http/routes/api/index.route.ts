@@ -15,6 +15,8 @@ const authRoute = Router()
 
 const usersRoute = Router()
   .post('/', usersController.createUser.bind(usersController) as Application)
+  .get('/@me', usersController.getCurrentUser.bind(usersController) as Application)
+  .get('/', usersController.getAllUsers.bind(usersController) as Application)
 
 export const apiRoute = Router()
   .use('/users', usersRoute)
