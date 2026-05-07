@@ -27,7 +27,7 @@ async function authenticate(req: AppRequest): Promise<[true, User] | [false, { s
     }]
   }
 
-  let token: { user_id: string }
+  let token: { user_id: number }
 
   try {
     token = jwt.verify(authHeader, env.SESSION_JWT_SECRET) as typeof token
