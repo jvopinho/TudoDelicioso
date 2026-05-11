@@ -1,0 +1,51 @@
+import { Op } from 'sequelize'
+
+import { AppResponse, AuthenticatedRequest } from '@/@types/express'
+import { Recipe, RecipeAuthor } from '@/database/sequelize/recipe'
+import { User } from '@/database/sequelize/user'
+import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
+import { BodyMiddleware } from '@/http/middlewares/body-middleware'
+import { CreateRecipeDTO } from '@/schemas/recipe-dto'
+
+export class RecipesController {
+  @AuthMiddleware({ onlyAuthenticated: true })
+  @BodyMiddleware(CreateRecipeDTO)
+  async createRecipe(req: AuthenticatedRequest, res: AppResponse) {
+    console.log(req.body)
+    const { title, description, instructions, external_url, author_ids, category_ids } = req.body
+
+    const authors = await User.findAll({ where: { id: { [Op.in]: author_ids } } })
+
+    if(authors.length !== author_ids.length) {
+      return res.status(400).json({ message: 'Algum dos autores informados não existe' })
+    }
+
+    // const categories = await Category.findAll({ where: { id: { [Op.in]: category_ids } } })
+
+    // if(categories.length !== category_ids.length) {
+    //   return res.status(400).json({ message: 'Alguma das categorias informadas não existe' })
+    // }
+
+    const recipe = new Recipe({
+      title,
+      description: description ?? null,
+      instructions,
+      externalUrl: external_url ?? null,
+    })
+
+    console.log(recipe.toJSON())
+
+    await recipe.save()
+
+    for(const author of authors) {
+      const recipeAuthor = new RecipeAuthor({
+        recipeId: recipe.id,
+        userId: author.id,
+      })
+
+      console.log(recipeAuthor.toJSON())
+
+      await recipeAuthor.save()
+    }
+  }
+}

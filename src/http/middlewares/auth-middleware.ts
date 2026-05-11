@@ -1,9 +1,11 @@
-import { NextFunction } from 'express'
+import { Application, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
+import { parseCookies } from '@/utils/cookie-parse'
+
 import { AppRequest, AppResponse, AuthenticatedRequest } from '@/@types/express'
+import { User } from '@/database/sequelize/user'
 import { env } from '@/env'
-import { User } from '@/models/user'
 import { UsersRepository } from '@/repositories'
 
 interface AuthMiddlewareOptions {
@@ -15,10 +17,8 @@ export function isAuthenticated(req: AppRequest): req is AuthenticatedRequest {
   return req.isAuthenticated()
 }
 
-async function authenticate(req: AppRequest): Promise<[true, User] | [false, { status: number, message: string }]> {
+async function authenticate(authHeader: string): Promise<[true, User] | [false, { status: number, message: string }]> {
   const usersRepository = new UsersRepository()
-  
-  const authHeader = req.headers['authorization']
 
   if(!authHeader) {
     return [false, { 
@@ -50,6 +50,33 @@ async function authenticate(req: AppRequest): Promise<[true, User] | [false, { s
   return [true, user]
 }
 
+export function frontendAuthenticate({ onlyAuthenticated = true, onlyAdmin = false }: AuthMiddlewareOptions = {}) {
+  return (async (req: AppRequest, res: AppResponse, next: NextFunction) => {
+    const cookies = parseCookies(req.headers.cookie)
+
+    const [authenticated, result] = await authenticate(cookies.get('session_token')!)
+
+    if(authenticated) {
+      const user = result as User
+
+      if(onlyAdmin && user.role !== 'ADMIN') {
+        return res.redirect('/forbidden')
+      }
+
+      req.isAuthenticated = () => authenticated as true
+      req.getUser = () => user
+    } else {
+      if(onlyAuthenticated) {
+        return res.redirect('/login')
+      }
+      
+      req.isAuthenticated = () => false
+    }
+
+    return next()
+  }) as Application
+}
+
 export function AuthMiddleware({ onlyAuthenticated = true, onlyAdmin = false }: AuthMiddlewareOptions = {}) {
   if(onlyAdmin && !onlyAuthenticated) {
     throw new Error('Invalid AuthMiddleware configuration: onlyAdmin cannot be true if onlyAuthenticated is false')
@@ -59,7 +86,9 @@ export function AuthMiddleware({ onlyAuthenticated = true, onlyAdmin = false }: 
     const originalMethod = descriptor.value
 
     descriptor.value = async function (req: AppRequest, res: AppResponse, next: NextFunction) {
-      const [authenticated, result] = await authenticate(req)
+      const authHeader = req.headers['authorization']
+
+      const [authenticated, result] = await authenticate(authHeader!)
 
       if(!authenticated && onlyAuthenticated) {
         const { status, message } = result

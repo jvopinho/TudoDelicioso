@@ -1,4 +1,4 @@
-import { User } from '@/models/user'
+import { User } from '@/database/sequelize/user'
 
 export {}
 

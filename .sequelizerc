@@ -1,0 +1,7 @@
+const path = require('node:path')
+require('dotenv').config()
+
+module.exports = {
+  config: path.resolve('src', 'database', 'sequelize', 'config.mjs'),
+  'migrations-path': path.resolve('migrations'),
+}

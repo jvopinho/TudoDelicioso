@@ -1,14 +1,8 @@
-import { PasswordAdapter } from '@/adapters/password-adapter'
-import { User } from '@/models/user'
+import { Op } from 'sequelize'
 
-const hashedPassword = await PasswordAdapter.hashPassword('123456')
+import { User } from '@/database/sequelize/user'
 
 export class UsersRepository {
-  private data: User[] = [
-    new User({ id: 1, name: 'John Doe', email: 'johndoe@email.com', password_hash: hashedPassword, role: 'ADMIN' }),
-    ...Array.from({ length: 20 }, (_, i) => new User({ id: i + 2, name: `User ${i + 2}`, email: `user${i + 2}@email.com`, password_hash: hashedPassword, role: 'STUDENT' })),
-  ]
-
   static instance: UsersRepository
 
   constructor() {
@@ -20,30 +14,24 @@ export class UsersRepository {
   }
 
   async create(data: User): Promise<void> {
-    this.data.push(data)
+    await User.create(data)
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.data.find(user => user.email === email) ?? null
+    return User.findOne({ 
+      where: { 
+        email, 
+      }, 
+    })
   }
 
   async findById(id: number): Promise<User | null> {
-    return this.data.find(user => user.id === id) ?? null
+    return User.findByPk(id)
   }
 
   async findMany(after?: number, limit = 10): Promise<User[]> {
-    const sortedData = this.data.sort((a, b) => a.id - b.id)
+    const users = await User.findAll({ where: { id: { [Op.gt]: after ?? 0 } }, order: [['id', 'ASC']], limit })
 
-    if(!after) {
-      return sortedData.slice(0, limit)
-    }
-
-    const afterIndex = sortedData.findIndex(user => user.id === after)
-
-    if(afterIndex === -1) {
-      return sortedData.slice(0, limit)
-    }
-
-    return sortedData.slice(afterIndex + 1, afterIndex + 1 + limit)
+    return users
   }
 }

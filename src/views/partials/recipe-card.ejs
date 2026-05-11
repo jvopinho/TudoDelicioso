@@ -1,0 +1,34 @@
+<div class="recipe-card">
+  <div class="recipe-header">
+    <div class="date-badge">
+      <strong>15</strong>
+      <span>OCT</span>
+    </div>
+    
+    <div>
+      <h3 class="recipe-title">
+        <%= recipe.title %> <%= recipe.id %>
+      </h3>
+      
+      <p class="recipe-meta">
+        by Admin | 0 comments
+      </p>
+    </div>
+  </div>
+  
+  <div class="recipe-content">
+    
+    <img
+    src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg"
+    alt="Recipe"
+    />
+    
+    <div>
+      <p>
+        <%= recipe.description %>
+      </p>
+      
+      <button class="more-btn">More</button>
+    </div>
+  </div>
+</div>

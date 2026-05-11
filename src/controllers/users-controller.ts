@@ -1,8 +1,8 @@
 import { AppResponse, AuthenticatedRequest } from '@/@types/express'
 import { PasswordAdapter } from '@/adapters/password-adapter'
+import { User } from '@/database/sequelize/user'
 import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
-import { User } from '@/models/user'
 import { UsersRepository } from '@/repositories'
 import { CreateUserDTO } from '@/schemas/user-dto'
 
@@ -19,7 +19,7 @@ export class UsersController {
     const user = new User({
       email,
       name,
-      password_hash: passwordHash,
+      passwordHash,
     })
 
     await this.usersRepository.create(user)

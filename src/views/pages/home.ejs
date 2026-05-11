@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <%- include('../partials/head') %>
+    <link rel="stylesheet" href="/styles/recipe-list.css">
+  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cookery Book</title>
+
+  <style>
+    /* MAIN */
+
+    /* RECIPE CARD */
+
+    
+
+    /* GALLERY */
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .gallery-item {
+      background: white;
+      padding: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 70px;
+      object-fit: cover;
+    }
+
+    /* CATEGORIES */
+
+    .categories {
+      display: flex;
+      gap: 16px;
+    }
+
+    .category-column {
+      flex: 1;
+    }
+
+    .category-item {
+      font-size: 12px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      color: #7ba4b8;
+      transition: 0.2s;
+    }
+
+    .category-item:hover {
+      background: #f1f1f1;
+    }
+
+    .category-item.active {
+      background: #e07a5f;
+      color: white;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .right-column {
+        width: 100%;
+      }
+
+      .recipe-content {
+        flex-direction: column;
+      }
+
+      .recipe-content img {
+        width: 100%;
+        height: 220px;
+      }
+
+      .header-main {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  
+  <main class="container">
+
+    <!-- LEFT -->
+
+    <section class="left-column">
+      <h2 class="section-title">LATEST RECIPES</h2>
+
+      <!-- CARD -->
+
+      <div id="recipes-list">
+        <% recipes.forEach((recipe, i) => { %>
+          <%- include('../partials/recipe-card', { recipe }) %>  
+        <% }); %>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+
+    <aside class="right-column">
+
+      <div class="gallery">
+
+        <div class="gallery-item">
+          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
+        </div>
+
+        <div class="gallery-item">
+          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
+        </div>
+
+        <div class="gallery-item">
+          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
+        </div>
+
+        <div class="gallery-item">
+          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
+        </div>
+
+      </div>
+
+      <h3 class="section-title">CATEGORIES</h3>
+
+      <div class="categories">
+
+        <div class="category-column">
+
+          <div class="category-item active">Beef</div>
+          <div class="category-item">Chicken</div>
+          <div class="category-item">Egg</div>
+          <div class="category-item">Cheese</div>
+
+        </div>
+
+        <div class="category-column">
+
+          <div class="category-item active">Appetizer</div>
+          <div class="category-item">Breakfast</div>
+          <div class="category-item">Bakery</div>
+          <div class="category-item">Dessert</div>
+
+        </div>
+
+      </div>
+
+    </aside>
+  </main>
+</body>
+</html>

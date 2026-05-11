@@ -1,20 +1,30 @@
 import path from 'node:path'
 
-import express from 'express'
+import express, { Application, NextFunction } from 'express'
 
+import { AppRequest, AppResponse } from '@/@types/express'
 import { env } from '@/env'
 
 import { apiRoute } from './routes/api/index.route'
+import { frontendRoute } from './routes/frontend/index.route'
 
 export const app = express()
 
 app.set('view engine', 'ejs')
-app.set('views', path.join(import.meta.dirname, '../views'))
+app.set('views', path.join(import.meta.dirname, '../views/pages'))
+app.use(express.static(path.join(process.cwd(), 'public')))
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.render('main', { title: 'Tudo Delicioso' })
-})
+app.use(preHandler as Application)
+
+function preHandler(req: AppRequest, res: AppResponse, next: NextFunction) {
+  req.isAuthenticated = () => false
+  req.getUser = () => null
+  
+  next()
+}
+
+app.use(frontendRoute)
 
 app.use('/api', apiRoute)
 

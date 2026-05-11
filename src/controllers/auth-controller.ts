@@ -20,7 +20,7 @@ export class AuthController {
       return res.status(401).json({ message: 'Email ou senha inválidos' })
     }
 
-    const isMatch = await PasswordAdapter.comparePassword(password, user.getPasswordHash())
+    const isMatch = await PasswordAdapter.comparePassword(password, user.passwordHash)
 
     if(!isMatch) {
       return res.status(401).json({ message: 'Email ou senha inválidos' })

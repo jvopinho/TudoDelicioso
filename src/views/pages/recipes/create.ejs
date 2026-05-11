@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../../partials/head') %>
+  <link rel="stylesheet" href="/styles/create-recipe.css">
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cookery Book</title>
+</head>
+<body>
+  <%- include('../../partials/header') %>  
+  <main class="create-container">
+    <div class="create-card">
+      
+      <h1 class="create-title">
+        CRIAR NOVA RECEITA
+      </h1>
+      
+      <form>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Título da Receita
+          </label>
+          
+          <input
+          type="text"
+          class="form-input"
+          placeholder="Ex: Lasanha de Frango Cremosa"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Categorias
+          </label>
+          
+          <div class="multi-select">
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="massas">
+              <span>Massas</span>
+            </label>
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="sobremesas">
+              <span>Sobremesas</span>
+            </label>
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="carnes">
+              <span>Carnes</span>
+            </label>
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="vegano">
+              <span>Vegano</span>
+            </label>
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="fitness">
+              <span>Fitness</span>
+            </label>
+            
+            <label class="multi-option">
+              <input type="checkbox" name="categories" value="lanches">
+              <span>Lanches</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          
+          <label class="form-label">
+            Upload da Imagem
+          </label>
+          
+          <label class="upload-box" id="upload-box">
+            
+            <input
+            type="file"
+            class="upload-input"
+            accept="image/*"
+            id="recipe-image"
+            >
+            
+            <img
+            src=""
+            alt="Preview"
+            class="upload-preview"
+            id="upload-preview"
+            >
+            
+            <div class="upload-placeholder" id="upload-placeholder">
+              
+              <div class="upload-icon">📷</div>
+              
+              <div class="upload-text">
+                Clique para enviar uma imagem
+              </div>
+              
+              <div class="upload-subtext">
+                PNG, JPG ou WEBP
+              </div>
+              
+            </div>
+            
+          </label>
+          
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Ingredientes
+          </label>
+          
+          <div class="ingredients-list">
+            
+            <div class="ingredient-row">
+              <input
+              type="text"
+              class="form-input"
+              placeholder="Ingrediente"
+              >
+              
+              <input
+              type="text"
+              class="form-input"
+              placeholder="Quantidade"
+              >
+            </div>
+            
+            <div class="ingredient-row">
+              <input
+              type="text"
+              class="form-input"
+              placeholder="Ingrediente"
+              >
+              
+              <input
+              type="text"
+              class="form-input"
+              placeholder="Quantidade"
+              >
+            </div>
+            
+          </div>
+          
+          <br>
+          
+          <button type="button" class="add-btn">
+            + Adicionar Ingrediente
+          </button>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Modo de Preparo
+          </label>
+          
+          <textarea
+          class="form-textarea"
+          placeholder="Descreva passo a passo..."
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          
+          <label class="form-label">
+            Autores da Receita
+          </label>
+          
+          <div class="authors-box">
+            
+            <!-- Autores selecionados -->
+            <div class="selected-authors" id="selected-authors"></div>
+            
+            <!-- Input -->
+            <input
+            type="text"
+            class="authors-input"
+            id="authors-input"
+            placeholder="Digite o nome do autor..."
+            autocomplete="off"
+            >
+            
+            <!-- Sugestões -->
+            <div class="authors-dropdown" id="authors-dropdown"></div>
+            
+          </div>
+          
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            Dicas Extras
+          </label>
+          
+          <textarea
+          class="form-textarea"
+          placeholder="Ex: Sirva com queijo parmesão..."
+          ></textarea>
+        </div>
+        
+        <div class="actions">
+          <button class="submit-btn" id="submit-btn">
+            Publicar Receita
+          </button>
+        </div>
+        
+      </form>
+      
+    </div>
+  </main>
+
+  <script src="/js/create-recipe.js"></script>
+  
+  <script>
+    const input = document.getElementById('recipe-image')
+    const preview = document.getElementById('upload-preview')
+    const placeholder = document.getElementById('upload-placeholder')
+
+    const submitButton = document.getElementById('submit-btn')
+
+    let file
+
+    input.addEventListener('change', (event) => {
+      file = event.target.files[0]
+      
+      if (!file) return
+      
+      const reader = new FileReader()
+      
+      reader.onload = (e) => {
+        preview.src = e.target.result
+        preview.style.display = 'block'
+        
+        placeholder.style.display = 'none'
+      }
+      
+      reader.readAsDataURL(file)
+    })
+  
+    submitButton.addEventListener('click', (event) => {
+      event.preventDefault()
+      console.log(selectedUsers, file);
+      alert('Receita publicada com sucesso!')
+    })
+  </script>
+</body>
+</html>
