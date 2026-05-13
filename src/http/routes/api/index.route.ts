@@ -4,6 +4,7 @@ import { AuthController } from '@/controllers/auth-controller'
 import { CategoriesController } from '@/controllers/categories-controller'
 import { RecipesController } from '@/controllers/recipes-controller'
 import { UsersController } from '@/controllers/users-controller'
+import { uploadMiddleware } from '@/http/middlewares/storage-middleware'
 import { UsersRepository } from '@/repositories/users-repository'
 
 const usersRepository = new UsersRepository()
@@ -23,6 +24,7 @@ const usersRoute = Router()
 
 const recipesRoute = Router()
   .post('/', recipesController.createRecipe.bind(recipesController) as Application)
+  .post('/:recipe_id/upload', uploadMiddleware.single('thumbnail'), recipesController.uploadRecipeImage.bind(recipesController) as Application)
 
 const categoriesRoute = Router()
   .post('/', categoriesController.createCategory.bind(categoriesController) as Application)

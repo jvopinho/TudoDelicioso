@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import bodyParser from 'body-parser'
 import express, { Application, NextFunction } from 'express'
 
 import { AppRequest, AppResponse } from '@/@types/express'
@@ -13,7 +14,10 @@ export const app = express()
 app.set('view engine', 'ejs')
 app.set('views', path.join(import.meta.dirname, '../views/pages'))
 app.use(express.static(path.join(process.cwd(), 'public')))
+app.use('/thumbnails', express.static(path.join(process.cwd(), 'thumbnails')))
 app.use(express.json())
+app.use(bodyParser.urlencoded())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(preHandler as Application)
 

@@ -20,3 +20,9 @@ frontendRoute.get('/', frontendAuthenticate({ onlyAuthenticated: false }), async
     user,
   })
 })
+
+frontendRoute.get('/login', (req, res) => {
+  res.render('login', {
+    user: null,
+  })
+})

@@ -31,6 +31,13 @@
   letter-spacing: 1px;
 }
 
+.form-label.required::after {
+  content: '*';
+  color: #c73a3a;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
 .form-input,
 .form-textarea {
   width: 100%;
@@ -287,7 +294,7 @@
 }
 
 .submit-btn {
-  background: #e07a5f;
+  background: #5fe07f;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -299,7 +306,7 @@
 }
 
 .submit-btn:hover {
-  background: #cf694d;
+  background: #46a75e;
 }
 
 .actions {

@@ -22,9 +22,17 @@
             <div>
               <a href="/recipes/create">Nova Receita</a>
             </div>
+
+            <% if (user.role == 'ADMIN') { %>
+              <div>
+                <a href="/admin/users">Gerenciar Usuários</a>
+              </div>
+            <% } %>
           </div>
         <% } else { %>
-          <span>Login</span>
+          <span>
+            <a href="/login">Login</a>
+          </span>
         <% } %>
       </div>
     </nav>
@@ -33,7 +41,9 @@
   <div class="header-main">
 
     <div class="logo-area">
-      <img src="/images/tudo-delicioso.svg" alt="Logo">
+      <a href="/">
+        <img src="/images/tudo-delicioso.svg" alt="Logo">
+      </a>
     </div>
 
     <div class="search-box">

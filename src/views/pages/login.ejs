@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <%- include('../partials/head') %>
+  
+  <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+  
+  <%- include('../partials/header') %>
+  
+  <!-- LOGIN -->
+  
+  <main class="auth-page">
+    
+    <div class="auth-card">
+      
+      <h1 class="auth-title">
+        LOGIN
+      </h1>
+      
+      <p class="auth-subtitle">
+        Entre na sua conta para publicar receitas,
+        salvar favoritos e colaborar com outros autores.
+      </p>
+      
+      <form>
+        
+        <div class="form-group">
+          
+          <label class="form-label">
+            E-mail
+          </label>
+          
+          <input
+          type="email"
+          class="form-input"
+          placeholder="Digite seu e-mail"
+          >
+          
+        </div>
+        
+        <div class="form-group">
+          
+          <label class="form-label">
+            Senha
+          </label>
+          
+          <input
+          type="password"
+          class="form-input"
+          placeholder="Digite sua senha"
+          >
+          
+        </div>
+        
+        <div class="remember-row">
+          
+          <label class="remember-box">
+            <input type="checkbox">
+            Lembrar de mim
+          </label>
+          
+          <a href="#" class="forgot-password">
+            Esqueceu sua senha?
+          </a>
+          
+        </div>
+        
+        <button class="login-btn" id="login-btn">
+          Entrar
+        </button>
+      </form>
+    </main>
+    
+    <script>
+      // Exemplo de uso do Axios para enviar os dados do formulário
+      document.querySelector('#login-btn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const email = document.querySelector('input[type="email"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+        
+        try {
+          const response = await axios.post('/api/auth/sign-in', { email, password });
+          console.log(response.data);
+
+          setCookie('session_token', response.data.access_token, 0.5);
+          window.location.href = '/';
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    </script>
+  </body>
+  </html>

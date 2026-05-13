@@ -12,11 +12,25 @@ export class RecipesController {
   @BodyMiddleware(CreateRecipeDTO)
   async createRecipe(req: AuthenticatedRequest, res: AppResponse) {
     console.log(req.body)
-    const { title, description, instructions, external_url, author_ids, category_ids } = req.body
+    const { 
+      title, 
+      description, 
+      instructions, 
+      external_url, 
+      author_ids: moreAuthorIds, 
+      category_ids,
+      preparation_time,
+      difficulty,
+      tips,
+      servings,
+      ingredients,
+    } = req.body as CreateRecipeDTO
 
-    const authors = await User.findAll({ where: { id: { [Op.in]: author_ids } } })
+    const authorIds = [req.getUser().id, ...(moreAuthorIds ?? [])]
 
-    if(authors.length !== author_ids.length) {
+    const authors = await User.findAll({ where: { id: { [Op.in]: authorIds } } })
+
+    if(authors.length !== authorIds.length) {
       return res.status(400).json({ message: 'Algum dos autores informados não existe' })
     }
 
@@ -28,9 +42,15 @@ export class RecipesController {
 
     const recipe = new Recipe({
       title,
-      description: description ?? null,
+      description: description ?? undefined,
       instructions,
-      externalUrl: external_url ?? null,
+      externalUrl: external_url ?? undefined,
+      prepTime: preparation_time ?? undefined,
+      difficulty: difficulty ?? undefined,
+      thumbnail: '',
+      tip: tips ?? undefined,
+      servings: servings ?? undefined,
+      ingredients: ingredients,
     })
 
     console.log(recipe.toJSON())
@@ -47,5 +67,28 @@ export class RecipesController {
 
       await recipeAuthor.save()
     }
+
+    res.status(201).json({ id: recipe.id })
+  }
+
+  @AuthMiddleware({ onlyAuthenticated: false })
+  async uploadRecipeImage(req: AuthenticatedRequest, res: AppResponse) {
+    const file = req.file
+
+    if(!file) {
+      return res.status(400).json({ message: 'Arquivo de imagem é obrigatório' })
+    }
+    
+    const { recipe_id } = req.params
+
+    const recipe = await Recipe.findByPk(recipe_id as string)
+
+    if(!recipe) {
+      return res.status(404).json({ message: 'Receita não encontrada' })
+    }
+    
+    await Recipe.update({ thumbnail: file.filename }, { where: { id: recipe_id } })
+
+    res.json({ message: 'Em breve!' })
   }
 }

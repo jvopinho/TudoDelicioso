@@ -20,7 +20,7 @@
       <form>
         
         <div class="form-group">
-          <label class="form-label">
+          <label class="form-label required">
             Título da Receita
           </label>
           
@@ -28,11 +28,25 @@
           type="text"
           class="form-input"
           placeholder="Ex: Lasanha de Frango Cremosa"
+          id="recipe-title"
           >
         </div>
         
         <div class="form-group">
           <label class="form-label">
+            Descrição
+          </label>
+          
+          <textarea
+          class="form-textarea"
+          placeholder="Descreva a receita..."
+          id="recipe-description"
+          style="min-height: 80px !important;"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label required">
             Categorias
           </label>
           
@@ -111,37 +125,19 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">
+          <label class="form-label required">
             Ingredientes
           </label>
           
-          <div class="ingredients-list">
+          <div class="ingredients-list" id="ingredients-list">
             
             <div class="ingredient-row">
               <input
               type="text"
+              name="ingredient"
               class="form-input"
               placeholder="Ingrediente"
-              >
-              
-              <input
-              type="text"
-              class="form-input"
-              placeholder="Quantidade"
-              >
-            </div>
-            
-            <div class="ingredient-row">
-              <input
-              type="text"
-              class="form-input"
-              placeholder="Ingrediente"
-              >
-              
-              <input
-              type="text"
-              class="form-input"
-              placeholder="Quantidade"
+              data-ingredient
               >
             </div>
             
@@ -155,13 +151,14 @@
         </div>
         
         <div class="form-group">
-          <label class="form-label">
+          <label class="form-label required">
             Modo de Preparo
           </label>
           
           <textarea
           class="form-textarea"
           placeholder="Descreva passo a passo..."
+          id="preparation-steps"
           ></textarea>
         </div>
         
@@ -200,6 +197,7 @@
           <textarea
           class="form-textarea"
           placeholder="Ex: Sirva com queijo parmesão..."
+          id="extra-tips"
           ></textarea>
         </div>
         
@@ -213,19 +211,28 @@
       
     </div>
   </main>
-
+  
   <script src="/js/create-recipe.js"></script>
   
   <script>
-    const input = document.getElementById('recipe-image')
+    const recipeTitleInput = document.getElementById('recipe-title')
+    const recipeDescriptionInput = document.getElementById('recipe-description')
+    
+    const ingredientsList = document.getElementById('ingredients-list')
+    const addIngredientBtn = document.querySelector('.add-btn')
+    
+    const preparationStepsTextarea = document.getElementById('preparation-steps')
+    const extraTipsTextarea = document.getElementById('extra-tips')
+    
+    const imageInput = document.getElementById('recipe-image')
     const preview = document.getElementById('upload-preview')
     const placeholder = document.getElementById('upload-placeholder')
-
+    
     const submitButton = document.getElementById('submit-btn')
-
+    
     let file
-
-    input.addEventListener('change', (event) => {
+    
+    imageInput.addEventListener('change', (event) => {
       file = event.target.files[0]
       
       if (!file) return
@@ -241,10 +248,80 @@
       
       reader.readAsDataURL(file)
     })
-  
-    submitButton.addEventListener('click', (event) => {
+    
+    submitButton.addEventListener('click', async(event) => {
       event.preventDefault()
-      console.log(selectedUsers, file);
+      const title = recipeTitleInput.value
+      const description = recipeDescriptionInput.value ?? null
+      const categoryCheckboxes = document.querySelectorAll('input[name="categories"]:checked')
+      const categories = Array.from(categoryCheckboxes).map(cb => cb.value)
+      const preparationSteps = preparationStepsTextarea.value.split('\n').filter(line => line.trim() !== '')
+      const ingredients = Array.from(document.querySelectorAll('input[name="ingredient"]')).map(input => input.value).filter(value => value.trim() !== '')
+      const extraTips = extraTipsTextarea.value
+      
+      if(!title) {
+        alert('O título da receita é obrigatório!')
+        return
+      }
+      
+      if(!categories.length) {
+        alert('Selecione pelo menos uma categoria!')
+        return
+      }
+      
+      if(!preparationSteps.length) {
+        alert('O modo de preparo é obrigatório!')
+        return
+      }
+      
+      if(!ingredients.length) {
+        alert('Adicione pelo menos um ingrediente!')
+        return
+      }
+      
+      console.table({selectedUsers, title, description, categories, preparationSteps, extraTips, ingredients, file});
+      
+      const authToken = getCookie('session_token')
+      
+      console.log(authToken)
+      
+      const response = await axios.post('/api/recipes', {
+        title,
+        description,
+        category_ids: categories,
+        author_ids: selectedUsers.map(a => a.id),
+        instructions: preparationSteps,
+        extraTips,
+        ingredients,
+        tips: extraTips,
+        
+        // ! Para implementar
+        preparation_time: 45,
+        difficulty: 'MEDIUM',
+        servings: 4,
+        external_url: null,
+      }, {
+        headers: {
+          'Authorization': `${authToken}`
+        }
+      })
+      
+      const data = response.data
+      console.log(data)
+      if(file) {
+        const formData = new FormData()
+        formData.append('thumbnail', file)
+        
+        console.log(formData);
+        
+        await axios.post(`/api/recipes/${data.id}/upload`, formData, {
+          headers: {
+            'Authorization': `${authToken}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        })
+      }
+      
       alert('Receita publicada com sucesso!')
     })
   </script>

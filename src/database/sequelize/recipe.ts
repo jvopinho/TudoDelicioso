@@ -6,7 +6,16 @@ import {
   Model, 
 } from 'sequelize'
 
+import { createEnum, enumInfer } from '@/utils/create-enum'
+
 import { sequelize } from './index'
+
+export const Difficulty = createEnum([
+  'EASY',
+  'MEDIUM',
+  'HARD',
+] as const)
+export type Difficulty = enumInfer<typeof Difficulty>
 
 export class Recipe extends Model<
   InferAttributes<Recipe>,
@@ -16,11 +25,23 @@ export class Recipe extends Model<
 
   declare title: string
 
-  declare description: string
+  declare description?: string
 
-  declare instructions: string
+  declare instructions: string[]
 
   declare externalUrl?: string
+
+  declare thumbnail?: string
+
+  declare prepTime?: number
+
+  declare ingredients: string[]
+
+  declare servings?: number
+
+  declare tip?: string
+
+  declare difficulty?: Difficulty
 }
 
 Recipe.init(
@@ -39,11 +60,36 @@ Recipe.init(
       allowNull: true,
     },
     instructions: {
-      type: DataTypes.TEXT,
+      type: DataTypes.ARRAY(DataTypes.TEXT),
       allowNull: false,
     },
     externalUrl: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    thumbnail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    prepTime: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    ingredients: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
+      defaultValue: [],
+    },
+    servings: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    tip: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    difficulty: {
+      type: DataTypes.ENUM(...Object.values(Difficulty)),
       allowNull: true,
     },
   },

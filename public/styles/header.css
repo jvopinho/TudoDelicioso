@@ -17,6 +17,11 @@ header {
   cursor: pointer;
 }
 
+.top-bar span a {
+  color: white;
+  text-decoration: none;
+}
+
 .top-bar span:hover {
   text-decoration: underline;
 }
