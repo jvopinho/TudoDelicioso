@@ -25,23 +25,23 @@ export class Recipe extends Model<
 
   declare title: string
 
-  declare description?: string
+  declare description: string | null
 
   declare instructions: string[]
 
-  declare externalUrl?: string
+  declare externalUrl: string | null
 
-  declare thumbnail?: string
+  declare thumbnail: string | null
 
-  declare prepTime?: number
+  declare prepTime: number | null
 
   declare ingredients: string[]
 
-  declare servings?: number
+  declare servings: number | null
 
-  declare tip?: string
+  declare tip: string | null
 
-  declare difficulty?: Difficulty
+  declare difficulty: Difficulty | null
 }
 
 Recipe.init(

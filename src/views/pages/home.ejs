@@ -119,21 +119,11 @@
 
       <div class="gallery">
 
-        <div class="gallery-item">
-          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
-        </div>
-
-        <div class="gallery-item">
-          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
-        </div>
-
-        <div class="gallery-item">
-          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
-        </div>
-
-        <div class="gallery-item">
-          <img src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg">
-        </div>
+        <% randomRecipes.forEach(recipe => { %>
+          <div class="gallery-item">
+            <img src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '#' %>">
+          </div>
+        <% }) %>
 
       </div>
 

@@ -42,14 +42,14 @@ export class RecipesController {
 
     const recipe = new Recipe({
       title,
-      description: description ?? undefined,
+      description: description ?? null,
       instructions,
-      externalUrl: external_url ?? undefined,
-      prepTime: preparation_time ?? undefined,
-      difficulty: difficulty ?? undefined,
-      thumbnail: '',
-      tip: tips ?? undefined,
-      servings: servings ?? undefined,
+      externalUrl: external_url ?? null,
+      prepTime: preparation_time ?? null,
+      difficulty: difficulty ?? null,
+      thumbnail: null,
+      tip: tips ?? null,
+      servings: servings ?? null,
       ingredients: ingredients,
     })
 
