@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Lasanha Cremosa de Frango</title>
+
+    <link rel="stylesheet" href="/styles/recipe.css">
+
+    <%- include('../../partials/head.ejs') %>
+  </head>
+
+  <body>
+
+    <%- include('../../partials/header.ejs') %>
+
+    <!-- PAGE -->
+
+    <main class="recipe-page">
+
+      <!-- MAIN -->
+
+      <section class="recipe-main">
+
+        <% if(recipe.thumbnail) { %>
+          <img
+            class="recipe-banner"
+            src="/thumbnails/<%= recipe.thumbnail %>"
+            alt="<%= recipe.title %>"
+          >
+        <% } %>
+
+        <div class="recipe-body">
+
+          <div class="recipe-category">
+            Massas
+          </div>
+
+          <h1 class="recipe-title">
+            <%= recipe.title %>
+          </h1>
+
+          <div class="recipe-meta">
+
+            <% recipe.authors.forEach((author, index) => { %>
+              <div class="recipe-author">
+                <%= author.name %>
+              </div>
+            <% }) %>
+
+          </div>
+
+          <div class="recipe-description">
+            <%= recipe.description %>
+          </div>
+
+          <!-- INGREDIENTES -->
+
+          <div class="recipe-section">
+
+            <h2 class="recipe-section-title">
+              Ingredientes
+            </h2>
+
+            <div class="ingredients-list">
+
+              <% recipe.ingredients.forEach(ingredient => { %>
+                <label class="ingredient-item">
+
+                  <input
+                    type="checkbox"
+                    class="ingredient-check"
+                  >
+
+                  <%= ingredient %>
+
+                </label>
+              <% }) %>
+
+            </div>
+
+          </div>
+
+          <!-- PREPARO -->
+
+          <div class="recipe-section">
+
+            <h2 class="recipe-section-title">
+              Modo de Preparo
+            </h2>
+
+            <div class="steps-list">
+
+              <% recipe.instructions.forEach((instruction, index) => { %>
+
+                <div class="step-item">
+
+                  <div class="step-number">
+                    <%= index + 1 %>
+                  </div>
+
+                  <div class="step-text">
+                    <%= instruction %>
+                  </div>
+
+                </div>
+
+              <% }) %>
+
+            </div>
+
+          </div>
+
+          <!-- DICAS -->
+
+          <div class="recipe-section">
+
+            <h2 class="recipe-section-title">
+              Dicas Extras
+            </h2>
+
+            <div class="recipe-tips">
+              <p>
+                <%= recipe.tip %>
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- SIDEBAR -->
+
+      <aside class="recipe-sidebar">
+
+        <!-- INFO -->
+
+        <div class="sidebar-card">
+
+          <h3 class="sidebar-title">
+            Informações
+          </h3>
+
+          <div class="info-list">
+
+            <% if(recipe.prepTime) { %>
+
+              <div class="info-item">
+                <span>Tempo</span>
+
+                <strong>
+                  <%= recipe.prepTime %>
+                </strong>
+              </div>
+
+            <% } %>
+
+            <% if(recipe.servings) { %>
+
+              <div class="info-item">
+                <span>Porções</span>
+
+                <strong>
+                  <%= recipe.servings %>
+                </strong>
+              </div>
+
+            <% } %>
+
+            <% if(recipe.difficulty) { %>
+
+              <div class="info-item">
+
+                <span>Dificuldade</span>
+
+                <strong>
+
+                  <% if(recipe.difficulty === 'EASY') { %>
+                    Fácil
+                  <% } else if(recipe.difficulty === 'MEDIUM') { %>
+                    Média
+                  <% } else if(recipe.difficulty === 'HARD') { %>
+                    Difícil
+                  <% } %>
+
+                </strong>
+
+              </div>
+
+            <% } %>
+
+          </div>
+
+        </div>
+
+        <!-- RELACIONADAS -->
+
+        <div class="sidebar-card">
+
+          <h3 class="sidebar-title">
+            Receitas Relacionadas
+          </h3>
+
+          <div class="related-recipes">
+
+            <% similarRecipes.forEach(related => { %>
+
+              <a
+                href="/recipes/<%= related.id %>"
+                class="related-item"
+              >
+
+                <% if(related.thumbnail) { %>
+
+                  <img
+                    src="/thumbnails/<%= related.thumbnail %>"
+                  >
+
+                <% } else { %>
+
+                  <img
+                    src="https://img.taste.com.au/usDoXvoa/taste/2018/01/healthy-chicken-chow-mein-134805-1.jpg"
+                  >
+
+                <% } %>
+
+                <div class="related-item-title">
+                  <%= related.title %>
+                </div>
+
+              </a>
+
+            <% }) %>
+
+          </div>
+
+        </div>
+
+      </aside>
+
+      <!-- COMMENTS -->
+
+      <section>
+
+        <div class="recipe-section">
+
+          <h2 class="recipe-section-title">
+            Comentários
+          </h2>
+
+          <!-- FORM -->
+
+          <% if(user) { %>
+
+            <div class="comments-form">
+
+              <textarea
+                class="comment-textarea"
+                placeholder="Escreva um comentário..."
+              ></textarea>
+
+              <div class="comment-actions">
+
+                <button class="comment-submit-btn">
+                  Publicar Comentário
+                </button>
+
+              </div>
+
+            </div>
+
+          <% } else { %>
+
+            <div class="comment-login-box">
+
+              <div class="comment-login-title">
+                Faça login para comentar
+              </div>
+
+              <p class="comment-login-text">
+                Entre na sua conta para participar da discussão,
+                compartilhar opiniões e interagir com outros usuários.
+              </p>
+
+              <a
+                href="/login"
+                class="comment-login-btn"
+              >
+                Fazer Login
+              </a>
+
+            </div>
+
+          <% } %>
+
+          <!-- LIST -->
+
+          <div class="comments-list">
+
+            <!-- ITEM -->
+
+            <div class="comment-item">
+
+              <div class="comment-avatar">
+                J
+              </div>
+
+              <div class="comment-content">
+
+                <div class="comment-header">
+
+                  <div>
+
+                    <div class="comment-author">
+                      João Silva
+                    </div>
+
+                    <div class="comment-date">
+                      há 2 horas
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="comment-text">
+                  Receita ficou incrível.
+                  Fiz no almoço de domingo
+                  e todo mundo gostou bastante.
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- ITEM -->
+
+            <% comments.forEach(comment => { %>
+
+              <div class="comment-item">
+
+                <div class="comment-avatar">
+                  <%= comment.author.charAt(0) %>
+                </div>
+
+                <div class="comment-content">
+
+                  <div class="comment-header">
+
+                    <div>
+
+                      <div class="comment-author">
+                        <%= comment.author %>
+                      </div>
+
+                      <div class="comment-date">
+                       <%= comment.ago %>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div class="comment-text">
+                    <%= comment.content %>
+                  </div>
+
+                </div>
+
+              </div>
+            <% }) %>
+
+            <div class="comment-item">
+
+              <div class="comment-avatar">
+                M
+              </div>
+
+              <div class="comment-content">
+
+                <div class="comment-header">
+
+                  <div>
+
+                    <div class="comment-author">
+                      Maria Oliveira
+                    </div>
+
+                    <div class="comment-date">
+                      há 5 horas
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="comment-text">
+                  Adicionei bacon na receita
+                  e ficou perfeita.
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </body>
+</html>
