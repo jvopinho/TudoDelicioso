@@ -11,8 +11,7 @@ export function BodyMiddleware(schema: ZodSchema) {
 
       if(!validationResult.success) {
         return res.status(400).json({ 
-          message: 'Invalid request body', 
-          errors: validationResult.error.issues, 
+          message: validationResult.error.issues.map(issue => `[${issue.input}] ${issue.message}`).join(', '),
         })
       }
 

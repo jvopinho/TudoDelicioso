@@ -1,7 +1,7 @@
 import { Op, Sequelize } from 'sequelize'
 
 import { sequelize } from '@/database/sequelize'
-import { Recipe } from '@/database/sequelize/recipe'
+import { Recipe, RecipeCategory } from '@/database/sequelize/recipe'
 
 interface SearchRecipesOptions {
   query?: string
@@ -35,6 +35,19 @@ export class RecipesService {
     return recipes
   }
 
+  async getRecipesByUser(userId: number) {
+    const recipes = await sequelize.query(
+      // eslint-disable-next-line @stylistic/quotes
+      /*sql*/`SELECT r.* FROM recipes AS r INNER JOIN user_recipes AS ur ON ur."recipeId" = r.id WHERE ur."userId" = $1 ORDER BY r."id" DESC;`,
+      {
+        bind: [userId],
+        type: 'SELECT',
+      },
+    )
+
+    return recipes
+  }
+
   async getRecipeById(id: number) {
     const recipe = await Recipe.findByPk(id)
 
@@ -44,7 +57,7 @@ export class RecipesService {
 
     const authors = await sequelize.query(
       // eslint-disable-next-line @stylistic/quotes
-      /*sql*/`SELECT u.id, u.name, u.email, u.role FROM user_recipes AS ur INNER JOIN users AS u ON u.id = ur."userId" WHERE ur."recipeId" = $1`,
+      /*sql*/`SELECT u.id, u.name FROM user_recipes AS ur INNER JOIN users AS u ON u.id = ur."userId" WHERE ur."recipeId" = $1`,
       {
         bind: [id],
         type: 'SELECT',
@@ -53,9 +66,22 @@ export class RecipesService {
 
     console.log(authors)
 
+    // const categories = await sequelize.query(
+    //   // eslint-disable-next-line @stylistic/quotes
+    //   /*sql*/`SELECT c.id, c.name, CASE WHEN rc."categoryId" IS NOT NULL THEN true ELSE false END AS selected FROM categories c LEFT JOIN recipe_categories rc ON c.id = rc."categoryId" AND rc."recipeId" = $1;`,
+    //   { bind: [id], type: 'SELECT' },
+    // )
+
+    const categories = await RecipeCategory.findAll({
+      where: {
+        recipeId: id,
+      },
+    })
+
     return {
       ...recipe.toJSON(),
       authors,
+      categories: categories.map(c => c.categoryId),
     }
   }
 

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Minhas Receitas
+  </title>
+
+  <%- include('../../partials/head') %>
+
+  <link
+    rel="stylesheet"
+    href="/styles/recipe-list.css"
+  >
+
+  <style>
+
+    .recipes-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    .recipes-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .recipes-title {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .recipes-subtitle {
+      opacity: .7;
+      margin-top: 4px;
+    }
+
+    .new-recipe-btn {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .recipes-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .recipe-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .recipe-action-btn {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .edit-btn {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      opacity: .7;
+    }
+
+    .recipe-content img {
+      width: 220px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #eee;
+    }
+
+    @media (max-width: 768px) {
+
+      .recipe-content {
+        flex-direction: column;
+      }
+
+      .recipe-content img {
+        width: 100%;
+        height: 220px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <%- include('../../partials/header') %>
+
+  <main class="recipes-page">
+
+    <div class="recipes-header">
+
+      <div>
+
+        <h1 class="recipes-title">
+          Minhas Receitas
+        </h1>
+
+        <p class="recipes-subtitle">
+          Gerencie todas as receitas criadas por você.
+        </p>
+
+      </div>
+
+      <a href="/recipes/create">
+
+        <button class="new-recipe-btn">
+          + Nova Receita
+        </button>
+
+      </a>
+
+    </div>
+
+    <% if(recipes.length) { %>
+
+      <div id="recipes-list">
+        <% recipes.forEach((recipe, i) => { %>
+          <%- include('../../partials/recipe-card', { recipe, moreActions: true }) %>  
+        <% }); %>
+      </div>
+
+    <% } else { %>
+
+      <div class="empty-state">
+
+        <h2>
+          Você ainda não criou nenhuma receita.
+        </h2>
+
+        <br>
+
+        <a href="/recipes/create">
+
+          <button class="new-recipe-btn">
+            Criar Primeira Receita
+          </button>
+
+        </a>
+
+      </div>
+
+    <% } %>
+
+  </main>
+
+  <script>
+
+    async function deleteRecipe(recipeId) {
+
+      const confirmed = confirm(
+        'Tem certeza que deseja deletar esta receita?'
+      )
+
+      if(!confirmed) {
+        return
+      }
+
+      const authToken = getCookie(
+        'session_token'
+      )
+
+      const response = await axios.delete(
+        `/api/recipes/${recipeId}`,
+        {
+          headers: {
+            Authorization: authToken
+          }
+        }
+      ).catch(err => err.response)
+
+      if(response.status !== 200) {
+
+        alert(
+          response.data?.message
+          || 'Erro ao deletar receita.'
+        )
+
+        return
+      }
+
+      alert('Receita deletada com sucesso!')
+
+      window.location.reload()
+
+    }
+
+  </script>
+
+</body>
+</html>

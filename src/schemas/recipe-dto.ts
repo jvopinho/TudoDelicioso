@@ -14,3 +14,7 @@ export const CreateRecipeDTO = z.object({
   ingredients: z.array(z.string().min(1, 'Nome do ingrediente é obrigatório')).min(1, 'Pelo menos um ingrediente é obrigatório'),
 })
 export type CreateRecipeDTO = z.infer<typeof CreateRecipeDTO>
+
+export const UpdateRecipeDTO = CreateRecipeDTO.partial()
+
+export type UpdateRecipeDTO = z.infer<typeof UpdateRecipeDTO>

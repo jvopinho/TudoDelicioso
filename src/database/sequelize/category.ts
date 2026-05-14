@@ -15,6 +15,10 @@ export class Category extends Model<
   declare id: CreationOptional<number>
 
   declare name: string
+
+  declare color: CreationOptional<string> | null
+
+  declare slug: string
 }
 
 Category.init(
@@ -28,6 +32,16 @@ Category.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    color: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: '#7ba4b8',
+    },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
   },
   {

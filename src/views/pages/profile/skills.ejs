@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <head>
+
+    <meta charset="UTF-8">
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Minhas Skills</title>
+
+    <link
+      rel="stylesheet"
+      href="/styles/admin-categories.css"
+    >
+
+    <style>
+
+      .skill-range-input {
+        width: 100px;
+        cursor: pointer;
+      }
+
+      .skill-level-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .skill-level-value {
+        min-width: 24px;
+        font-weight: bold;
+      }
+
+      .save-btn.hidden {
+        display: none;
+      }
+
+    </style>
+
+    <%- include('../../partials/head.ejs') %>
+
+  </head>
+
+  <body>
+
+    <%- include('../../partials/header.ejs') %>
+
+    <main class="admin-page">
+
+      <div class="admin-header">
+
+        <div>
+
+          <h1 class="admin-title">
+            Minhas Skills
+          </h1>
+
+          <p class="admin-subtitle">
+            Visualize e atualize o nível das suas habilidades.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="table-wrapper">
+
+        <table class="categories-table">
+
+          <thead>
+
+            <tr>
+
+              <th>Skill</th>
+              <th>Slug</th>
+              <th>Descrição</th>
+              <th>Level</th>
+
+              <th class="actions-column"></th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="skills-table-body">
+
+            <% skills.forEach(skill => { %>
+
+              <tr data-skill-id="<%= skill.id %>">
+
+                <td>
+
+                  <span class="table-text">
+                    <%= skill.name %>
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <span class="table-text">
+                    <%= skill.slug %>
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <span class="table-text">
+                    <%= skill.description %>
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <div class="skill-level-wrapper">
+
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="1"
+                      value="<%= skill.level %>"
+
+                      class="skill-range-input"
+
+                      oninput="handleSkillInput(this)"
+                    >
+
+                    <span
+                      class="table-text skill-level-value"
+                    >
+                      <%= skill.level %>
+                    </span>
+
+                  </div>
+
+                </td>
+
+                <td class="actions-column">
+
+                  <button
+                    class="table-action-btn save-btn hidden"
+                    onclick="saveSkillLevel(this)"
+                  >
+                    Salvar
+                  </button>
+
+                </td>
+
+              </tr>
+
+            <% }) %>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </main>
+
+    <script>
+
+      function handleSkillInput(input) {
+
+        const row = input.closest('tr')
+
+        const valueText = row.querySelector(
+          '.skill-level-value'
+        )
+
+        const saveButton = row.querySelector(
+          '.save-btn'
+        )
+
+        valueText.innerText = input.value
+
+        saveButton.classList.remove('hidden')
+
+      }
+
+      async function saveSkillLevel(button) {
+
+        const row = button.closest('tr')
+
+        const skillId = row.dataset.skillId
+
+        const rangeInput = row.querySelector(
+          '.skill-range-input'
+        )
+
+        const level = Number(rangeInput.value)
+
+        const authToken = getCookie(
+          'session_token'
+        )
+
+        console.log('Updating skill level:', {
+          skillId,
+          level
+        })
+
+        const response = await axios.patch(
+          `/api/skills/${skillId}/user`,
+          {
+            level
+          },
+          {
+            headers: {
+              Authorization: authToken
+            }
+          }
+        ).catch(err => err.response)
+
+        if(response.status !== 200) {
+
+          alert(
+            response.data?.message
+            || 'Erro ao atualizar skill.'
+          )
+
+          return
+        }
+
+        alert('Skill atualizada com sucesso!')
+
+        button.classList.add('hidden')
+
+      }
+
+    </script>
+
+  </body>
+
+</html>

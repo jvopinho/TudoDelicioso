@@ -1,4 +1,4 @@
-const users = [
+let users = [
   {
     id: 1,
     name: 'João Silva',
@@ -25,7 +25,7 @@ const users = [
   },
 ]
   
-const selectedUsers = []
+let selectedUsers = []
   
 const authorsInput = document.getElementById('authors-input')
 const dropdown = document.getElementById('authors-dropdown')

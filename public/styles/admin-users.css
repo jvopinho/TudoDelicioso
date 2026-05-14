@@ -1,0 +1,173 @@
+.admin-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 28px;
+}
+
+.admin-title {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.admin-subtitle {
+  font-size: 14px;
+  color: #888;
+}
+
+.add-user-btn {
+  border: none;
+
+  background: #e07a5f;
+  color: white;
+
+  padding: 14px 18px;
+
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.add-user-btn:hover {
+  background: #cf694d;
+}
+
+.table-wrapper {
+  background: white;
+
+  overflow-x: auto;
+
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) {
+  width: 30%;
+}
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2) {
+  width: 35%;
+}
+
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) {
+  width: 20%;
+}
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) {
+  width: 15%;
+}
+
+.users-table thead {
+  background: #7ba4b8;
+}
+
+.users-table th {
+  text-align: left;
+
+  color: white;
+
+  padding: 16px;
+
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.users-table td {
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #ececec;
+}
+
+.table-input {
+  width: 100%;
+
+  border: 1px solid #d8d8d8;
+  background: #f8f8f8;
+
+  padding: 12px;
+
+  font-size: 14px;
+  color: #555;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+.table-input:focus {
+  border-color: #7ba4b8;
+  background: white;
+}
+
+.table-text {
+  font-size: 14px;
+  color: #555;
+}
+
+.actions-column {
+  width: 120px;
+}
+
+.table-action-btn {
+  border: none;
+
+  padding: 10px 14px;
+
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.edit-btn {
+  background: #7ba4b8;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #6b93a7;
+}
+
+.save-btn {
+  background: #e07a5f;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #cf694d;
+}
+
+@media (max-width: 700px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .admin-title {
+    font-size: 28px;
+  }
+}

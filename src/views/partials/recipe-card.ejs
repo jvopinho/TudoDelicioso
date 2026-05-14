@@ -1,13 +1,15 @@
 <div class="recipe-card">
   <div class="recipe-header">
     <div class="date-badge">
-      <strong>15</strong>
-      <span>OCT</span>
+      <strong>
+        <%= new Date(recipe.createdAt).getDate() %>
+      </strong>
+      <span><%= new Date(recipe.createdAt).toLocaleString('pt-BR', { month: 'short' }).toUpperCase() %></span>
     </div>
     
     <div>
       <h3 class="recipe-title">
-        <%= recipe.title %> <%= recipe.id %>
+        <a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a>
       </h3>
       
       <p class="recipe-meta">
@@ -20,7 +22,7 @@
     
     <img
     src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '#' %>"
-    alt="Recipe"
+    alt=""
     />
     
     <div>
@@ -28,7 +30,14 @@
         <%= recipe.description %>
       </p>
       
-      <button class="more-btn">More</button>
+      <button class="more-btn" onclick="window.location.href = '/recipes/<%= recipe.id %>'">Ver Receita</button>
+      
+      <% try { %>
+        <% if(moreActions) { %>
+          <button class="more-btn" style="background-color: #7ba4b8;" onclick="window.location.href = '/recipes/<%= recipe.id %>/edit'">Editar</button>
+          <button class="more-btn" onclick="deleteRecipe('<%= recipe.id %>')">Deletar</button>
+        <% } %>
+      <% } catch(_) {} %>
     </div>
   </div>
 </div>

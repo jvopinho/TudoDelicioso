@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+  <%- include('../../partials/head') %>
+
+  <link
+    rel="stylesheet"
+    href="/styles/create-recipe.css"
+  >
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Editar Receita
+  </title>
+
+</head>
+
+<body>
+
+  <%- include('../../partials/header') %>
+
+  <main class="create-container">
+
+    <div class="create-card">
+
+      <h1 class="create-title">
+        EDITAR RECEITA
+      </h1>
+
+      <form>
+
+        <!-- TITLE -->
+
+        <div class="form-group">
+
+          <label class="form-label required">
+            Título da Receita
+          </label>
+
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ex: Lasanha de Frango Cremosa"
+            id="recipe-title"
+            value="<%= recipe.title %>"
+          >
+
+        </div>
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Descrição
+          </label>
+
+          <textarea
+            class="form-textarea"
+            placeholder="Descreva a receita..."
+            id="recipe-description"
+            style="min-height: 80px !important;"
+          ><%= recipe.description || '' %></textarea>
+
+        </div>
+
+        <!-- CATEGORIES -->
+
+        <div class="form-group">
+
+          <label class="form-label required">
+            Categorias
+          </label>
+
+          <div class="multi-select">
+
+            <% categories.forEach(category => { %>
+
+              <label class="multi-option">
+
+                <input
+                  type="checkbox"
+                  name="categories"
+                  value="<%= category.id %>"
+
+                  <%= recipe.categories?.some(c => c == category.id)
+                    ? 'checked'
+                    : ''
+                  %>
+                >
+
+                <span>
+                  <%= category.name %>
+                </span>
+
+              </label>
+
+            <% }) %>
+
+          </div>
+
+        </div>
+
+        <!-- IMAGE -->
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Upload da Imagem
+          </label>
+
+          <label
+            class="upload-box"
+            id="upload-box"
+          >
+
+            <input
+              type="file"
+              class="upload-input"
+              accept="image/*"
+              id="recipe-image"
+            >
+
+            <% if(recipe.thumbnail) { %>
+              <img
+                src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '' %>"
+                alt="Preview"
+                class="upload-preview"
+                id="upload-preview"
+
+                style="display: block;"
+              >
+            <% } else { %>
+              <img
+                src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '' %>"
+                alt="Preview"
+                class="upload-preview"
+                id="upload-preview"
+
+                style="display: none;"
+              >
+            <% } %>
+
+            <% if(recipe.thumbnail) { %>
+              <div
+                class="upload-placeholder"
+                id="upload-placeholder"
+
+                style="display: none;"
+              >
+            <% } else { %>
+              <div
+                class="upload-placeholder"
+                id="upload-placeholder"
+
+                style="display: flex;"
+              >
+            <% } %>
+
+              <div class="upload-icon">
+                📷
+              </div>
+
+              <div class="upload-text">
+                Clique para enviar uma imagem
+              </div>
+
+              <div class="upload-subtext">
+                PNG, JPG ou WEBP
+              </div>
+
+            </div>
+
+          </label>
+
+        </div>
+
+        <!-- INGREDIENTS -->
+
+        <div class="form-group">
+
+          <label class="form-label required">
+            Ingredientes
+          </label>
+
+          <div
+            class="ingredients-list"
+            id="ingredients-list"
+          >
+
+            <% recipe.ingredients.forEach(ingredient => { %>
+
+              <div class="ingredient-row">
+
+                <input
+                  type="text"
+                  name="ingredient"
+                  class="form-input"
+                  placeholder="Ingrediente"
+                  data-ingredient
+                  value="<%= ingredient %>"
+                >
+
+              </div>
+
+            <% }) %>
+
+          </div>
+
+          <br>
+
+          <button
+            type="button"
+            class="add-btn"
+          >
+            + Adicionar Ingrediente
+          </button>
+
+        </div>
+
+        <!-- INSTRUCTIONS -->
+
+        <div class="form-group">
+
+          <label class="form-label required">
+            Modo de Preparo
+          </label>
+
+          <textarea
+            class="form-textarea"
+            placeholder="Descreva passo a passo..."
+            id="preparation-steps"
+          ><%= recipe.instructions.join('\n') %></textarea>
+
+        </div>
+
+        <!-- AUTHORS -->
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Autores da Receita
+          </label>
+
+          <div class="authors-box">
+
+            <div
+              class="selected-authors"
+              id="selected-authors"
+            ></div>
+
+            <input
+              type="text"
+              class="authors-input"
+              id="authors-input"
+              placeholder="Digite o nome do autor..."
+              autocomplete="off"
+            >
+
+            <div
+              class="authors-dropdown"
+              id="authors-dropdown"
+            ></div>
+
+          </div>
+
+        </div>
+
+        <!-- TIPS -->
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Dicas Extras
+          </label>
+
+          <textarea
+            class="form-textarea"
+            placeholder="Ex: Sirva com queijo parmesão..."
+            id="extra-tips"
+          ><%= recipe.tip || '' %></textarea>
+
+        </div>
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+          <button
+            class="submit-btn"
+            id="submit-btn"
+          >
+            Salvar Alterações
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </main>
+
+  <script src="/js/create-recipe.js"></script>
+
+  <div style="display: none;" id="recipe-data">
+    <%- JSON.stringify(recipe) %>
+  </div>
+
+  <div style="display: none;" id="recipe-authors">
+    <%- JSON.stringify(recipe.authors || []) %>
+  </div>
+
+  <div style="display: none;" id="users-data">
+    <%- JSON.stringify(users) %>
+  </div>
+
+  <script>
+
+    users = JSON.parse(document.getElementById('users-data').textContent)
+
+    selectedUsers = JSON.parse(document.getElementById('recipe-authors').textContent)
+
+    if('<%= user.role != "ADMIN" %>' == 'true') {
+      selectedUsers = selectedUsers.filter(u => u.id != parseInt('<%= user.id %>'))
+    }
+
+    renderSelectedUsers()
+
+    const recipe = JSON.parse(document.getElementById('recipe-data').textContent)
+
+    const recipeTitleInput =
+      document.getElementById('recipe-title')
+
+    const recipeDescriptionInput =
+      document.getElementById('recipe-description')
+
+    const ingredientsList =
+      document.getElementById('ingredients-list')
+
+    const addIngredientBtn =
+      document.querySelector('.add-btn')
+
+    const preparationStepsTextarea =
+      document.getElementById('preparation-steps')
+
+    const extraTipsTextarea =
+      document.getElementById('extra-tips')
+
+    const imageInput =
+      document.getElementById('recipe-image')
+
+    const preview =
+      document.getElementById('upload-preview')
+
+    const placeholder =
+      document.getElementById('upload-placeholder')
+
+    const submitButton =
+      document.getElementById('submit-btn')
+
+    let file
+
+    imageInput.addEventListener(
+      'change',
+      (event) => {
+
+        file = event.target.files[0]
+
+        if (!file) return
+
+        const reader = new FileReader()
+
+        reader.onload = (e) => {
+
+          preview.src = e.target.result
+
+          preview.style.display = 'block'
+
+          placeholder.style.display = 'none'
+
+        }
+
+        reader.readAsDataURL(file)
+
+      }
+    )
+
+    addIngredientBtn.addEventListener(
+      'click',
+      () => {
+
+        console.log('Adicionando ingrediente');
+
+        const row = document.createElement('div')
+
+        row.classList.add('ingredient-row')
+
+        row.innerHTML = `
+          <input
+            type="text"
+            name="ingredient"
+            class="form-input"
+            placeholder="Ingrediente"
+            data-ingredient
+          >
+        `
+
+        ingredientsList.appendChild(row)
+
+      }
+    )
+
+    submitButton.addEventListener(
+      'click',
+      async(event) => {
+
+        event.preventDefault()
+
+        const title =
+          recipeTitleInput.value
+
+        const description =
+          recipeDescriptionInput.value ?? null
+
+        const categoryCheckboxes =
+          document.querySelectorAll(
+            'input[name=\"categories\"]:checked'
+          )
+
+        const categories =
+          Array.from(categoryCheckboxes)
+            .map(cb => cb.value)
+
+        const preparationSteps =
+          preparationStepsTextarea.value
+            .trim()
+            .split(/\n/gm)
+            .filter(line => line.trim() !== '')
+
+        const ingredients =
+          Array.from(
+            document.querySelectorAll(
+              'input[name=\"ingredient\"]'
+            )
+          )
+          .map(input => input.value)
+          .filter(value => value.trim() !== '')
+
+        const extraTips =
+          extraTipsTextarea.value
+
+        if(!title) {
+          alert('O título da receita é obrigatório!')
+          return
+        }
+
+        if(!categories.length) {
+          alert('Selecione pelo menos uma categoria!')
+          return
+        }
+
+        if(!preparationSteps.length) {
+          alert('O modo de preparo é obrigatório!')
+          return
+        }
+
+        if(!ingredients.length) {
+          alert('Adicione pelo menos um ingrediente!')
+          return
+        }
+
+        const authToken =
+          getCookie('session_token')
+
+        const response = await axios.patch(
+          `/api/recipes/${recipe.id}`,
+          {
+            title,
+            description,
+
+            category_ids: categories,
+
+            author_ids:
+              selectedUsers.map(a => parseInt(a.id)),
+
+            instructions:
+              preparationSteps,
+
+            ingredients,
+
+            tips: extraTips,
+
+            preparation_time:
+              recipe.prepTime,
+
+            difficulty:
+              recipe.difficulty,
+
+            servings:
+              recipe.servings,
+
+            external_url:
+              recipe.externalUrl,
+          },
+          {
+            headers: {
+              Authorization: authToken
+            }
+          }
+        ).catch(err => err.response)
+
+        if(response.status !== 200) {
+
+          alert(
+            response.data?.message
+            || 'Erro ao atualizar receita.'
+          )
+
+          return
+        }
+
+        if(file) {
+
+          const formData = new FormData()
+
+          formData.append(
+            'thumbnail',
+            file
+          )
+
+          await axios.post(
+            `/api/recipes/${recipe.id}/upload`,
+            formData,
+            {
+              headers: {
+                Authorization: authToken,
+                'Content-Type': 'multipart/form-data',
+              }
+            }
+          )
+        }
+
+        alert('Receita atualizada com sucesso!')
+
+      }
+    )
+
+  </script>
+
+</body>
+</html>

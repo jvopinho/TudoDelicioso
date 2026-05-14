@@ -1,11 +1,13 @@
 import { Op } from 'sequelize'
 
 import { AppResponse, AuthenticatedRequest } from '@/@types/express'
-import { Recipe, RecipeAuthor } from '@/database/sequelize/recipe'
+import { Category } from '@/database/sequelize/category'
+import { Recipe, RecipeAuthor, RecipeCategory } from '@/database/sequelize/recipe'
 import { User } from '@/database/sequelize/user'
 import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
 import { CreateRecipeDTO } from '@/schemas/recipe-dto'
+import { UpdateRecipeDTO } from '@/schemas/recipe-dto'
 
 export class RecipesController {
   @AuthMiddleware({ onlyAuthenticated: true })
@@ -26,7 +28,7 @@ export class RecipesController {
       ingredients,
     } = req.body as CreateRecipeDTO
 
-    const authorIds = [req.getUser().id, ...(moreAuthorIds ?? [])]
+    const authorIds = [...new Set([req.getUser().id, ...(moreAuthorIds ?? [])])]
 
     const authors = await User.findAll({ where: { id: { [Op.in]: authorIds } } })
 
@@ -34,11 +36,11 @@ export class RecipesController {
       return res.status(400).json({ message: 'Algum dos autores informados não existe' })
     }
 
-    // const categories = await Category.findAll({ where: { id: { [Op.in]: category_ids } } })
+    const categories = await Category.findAll({ where: { id: { [Op.in]: category_ids } } })
 
-    // if(categories.length !== category_ids.length) {
-    //   return res.status(400).json({ message: 'Alguma das categorias informadas não existe' })
-    // }
+    if(categories.length !== category_ids.length) {
+      return res.status(400).json({ message: 'Alguma das categorias informadas não existe' })
+    }
 
     const recipe = new Recipe({
       title,
@@ -68,7 +70,110 @@ export class RecipesController {
       await recipeAuthor.save()
     }
 
+    for(const category of categories) {
+      const recipeCategory = new RecipeCategory({
+        recipeId: recipe.id,
+        categoryId: category.id,
+      })
+
+      console.log(recipeCategory.toJSON())
+
+      await recipeCategory.save()
+    }
+
     res.status(201).json({ id: recipe.id })
+  }
+
+  @AuthMiddleware({ onlyAuthenticated: true })
+  @BodyMiddleware(UpdateRecipeDTO)
+  async updateRecipe(req: AuthenticatedRequest, res: AppResponse) {
+    const recipeId = parseInt(req.params.recipe_id as string, 10)
+
+    const recipe = await Recipe.findByPk(recipeId)
+
+    if(!recipe) {
+      return res.status(404).json({ message: 'Receita não encontrada' })
+    }
+
+    const user = req.getUser()
+
+    if(user.role !== 'ADMIN') {
+      const author = await RecipeAuthor.findOne({ where: { recipeId: recipe.id, userId: user.id } })
+
+      if(!author) {
+        return res.status(403).json({ message: 'Forbidden' })
+      }
+    }
+
+    const {
+      title,
+      description,
+      instructions,
+      external_url,
+      author_ids: moreAuthorIds,
+      category_ids,
+      preparation_time,
+      difficulty,
+      tips,
+      servings,
+      ingredients,
+    } = req.body as UpdateRecipeDTO
+
+    if(title !== undefined) recipe.set('title', title)
+    if(description !== undefined) recipe.set('description', description ?? null)
+    if(instructions !== undefined) recipe.set('instructions', instructions)
+    if(external_url !== undefined) recipe.set('externalUrl', external_url ?? null)
+    if(preparation_time !== undefined) recipe.set('prepTime', preparation_time ?? null)
+    if(difficulty !== undefined) recipe.set('difficulty', difficulty ?? null)
+    if(tips !== undefined) recipe.set('tip', tips ?? null)
+    if(servings !== undefined) recipe.set('servings', servings ?? null)
+    if(ingredients !== undefined) recipe.set('ingredients', ingredients)
+
+    await recipe.save()
+
+    console.log(moreAuthorIds)
+
+    if(moreAuthorIds !== undefined) {
+      const authorIds = [...new Set([user.id, ...(moreAuthorIds ?? [])].map(x => parseInt(x.toString())))]
+
+      console.log(authorIds)
+
+      const authors = await User.findAll({ where: { id: authorIds } })
+
+      if(authors.length !== authorIds.length) {
+        return res.status(400).json({ message: 'Algum dos autores informados não existe' })
+      }
+
+      // replace authors
+      await RecipeAuthor.destroy({ where: { recipeId: recipe.id } })
+
+      for(const author of authors) {
+        const recipeAuthor = new RecipeAuthor({ recipeId: recipe.id, userId: author.id })
+
+        await recipeAuthor.save()
+      }
+    }
+
+    if(category_ids !== undefined) {
+      const categoryIds = category_ids
+
+      const categories = await Category.findAll({ where: { id: categoryIds } })
+
+      if(categories.length !== categoryIds.length) {
+        return res.status(400).json({ message: 'Algum dos autores informados não existe' })
+      }
+
+      // replace categories
+      await RecipeCategory.destroy({ where: { recipeId: recipe.id } })
+
+      for(const category of categories) {
+        const recipeCategory = new RecipeCategory({ recipeId: recipe.id, categoryId: category.id })
+
+        await recipeCategory.save()
+      }
+    }
+
+    res.json({ id: recipe.id })
   }
 
   @AuthMiddleware({ onlyAuthenticated: false })

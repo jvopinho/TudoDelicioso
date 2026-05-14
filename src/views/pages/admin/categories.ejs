@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  
+  <meta charset="UTF-8">
+  
+  <meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+  >
+  
+  <title>Gerenciar Categorias</title>
+  
+  <link
+  rel="stylesheet"
+  href="/styles/admin-categories.css"
+  >
+  
+  <%- include('../../partials/head.ejs') %>
+  
+</head>
+
+<body>
+  
+  <%- include('../../partials/header.ejs') %>
+  
+  <main class="admin-page">
+    
+    <!-- HEADER -->
+    
+    <div class="admin-header">
+      
+      <div>
+        
+        <h1 class="admin-title">
+          Categorias
+        </h1>
+        
+        <p class="admin-subtitle">
+          Gerencie as categorias disponíveis para as receitas.
+        </p>
+        
+      </div>
+      
+      <button
+      class="add-category-btn"
+      id="add-category-btn"
+      >
+      + Nova Categoria
+    </button>
+    
+  </div>
+  
+  <!-- TABLE -->
+  
+  <div class="table-wrapper">
+    
+    <table class="categories-table">
+      
+      <thead>
+        
+        <tr>
+          
+          <th>Nome</th>
+          <th>Slug</th>
+          <th>Cor</th>
+          
+          <th class="actions-column"></th>
+          
+        </tr>
+        
+      </thead>
+      
+      <tbody id="categories-table-body">
+        
+        <!-- CATEGORY -->
+        
+        <% categories.forEach(category => { %>
+          
+          <tr data-category-id="<%= category.id %>">
+            
+            <td>
+              
+              <span class="table-text">
+                <%= category.name %>
+              </span>
+              
+            </td>
+            
+            <td>
+              
+              <span class="table-text">
+                <%= category.slug %>
+              </span>
+              
+            </td>
+            
+            <td>
+              
+              <div class="category-color-preview">
+                
+                <div
+                class="category-color-box"
+                data-color="<%= category.color %>"
+                ></div>
+                
+                <span class="table-text">
+                  <%= category.color %>
+                </span>
+                
+              </div>
+              
+            </td>
+            
+            <td class="actions-column">
+              
+              <button
+              class="table-action-btn edit-btn"
+              onclick="editCategory(this)"
+              >
+              Editar
+            </button>
+            
+          </td>
+          
+        </tr>
+        
+        <% }) %>
+        
+      </tbody>
+      
+    </table>
+    
+  </div>
+  
+</main>
+
+<script>
+  
+  const addCategoryButton = document.getElementById(
+  'add-category-btn'
+  )
+  
+  const tableBody = document.getElementById(
+  'categories-table-body'
+  )
+  
+  addCategoryButton.addEventListener('click', () => {
+    
+    const row = document.createElement('tr')
+    
+    row.innerHTML = `
+      <td>
+
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Nome da categoria"
+        >
+
+      </td>
+
+      <td>
+
+        <input
+          type="text"
+          class="table-input"
+          placeholder="slug"
+        >
+
+      </td>
+
+      <td>
+
+        <input
+          type="color"
+          class="color-input"
+          value="#7ba4b8"
+        >
+
+      </td>
+
+      <td class="actions-column">
+
+        <button
+          class="table-action-btn save-btn"
+          onclick="saveCategory(this)"
+        >
+          Salvar
+        </button>
+
+      </td>
+    `
+    
+    tableBody.appendChild(row)
+    
+  })
+  
+  async function editCategory(button) {
+    
+    const row = button.closest('tr')
+    
+    const columns = row.querySelectorAll('td')
+    
+    const categoryId = row.dataset.categoryId
+    
+    const name = columns[0]
+    .innerText
+    .trim()
+    
+    const slug = columns[1]
+    .innerText
+    .trim()
+    
+    const color = columns[2]
+    .querySelector('.table-text')
+    .innerText
+    .trim()
+    
+    columns[0].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${name}"
+      >
+    `
+    
+    columns[1].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${slug}"
+      >
+    `
+    
+    columns[2].innerHTML = `
+      <input
+        type="color"
+        class="color-input"
+        value="${color}"
+      >
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn save-btn"
+        onclick="saveCategory(this, ${categoryId})"
+      >
+        Salvar
+      </button>
+    `
+    
+  }
+  
+  async function saveCategory(button) {
+    
+    const row = button.closest('tr')
+    
+    const inputs = row.querySelectorAll('input')
+    
+    const columns = row.querySelectorAll('td')
+    
+    const categoryId = row.dataset.categoryId
+    
+    const name = inputs[0].value.trim()
+    
+    const slug = (
+    inputs[1].value.trim()
+    || name
+    )
+    .replace(/\s+/g, '-')
+    .toLowerCase()
+    
+    const color = inputs[2].value
+    
+    if(!name) {
+      alert('O nome da categoria é obrigatório.')
+      return
+    }
+    
+    if(!slug) {
+      alert('O slug da categoria é obrigatório.')
+      return
+    }
+    
+    if(!color) {
+      alert('A cor da categoria é obrigatória.')
+      return
+    }
+    
+    const authToken = getCookie('session_token')
+    
+    if(categoryId) {
+      
+      console.log('Updating category:', {
+        id: categoryId,
+        name,
+        slug,
+        color
+      })
+      
+      const response = await axios.patch(
+      `/api/categories/${categoryId}`,
+      {
+        name,
+        slug,
+        color
+      },
+      {
+        headers: {
+          Authorization: authToken
+        }
+      }
+      ).catch(err => err.response)
+      
+      if(response.status === 200) {
+        
+        alert('Categoria atualizada com sucesso!')
+        
+      } else {
+        
+        alert(
+        response.data?.message
+        || 'Erro ao atualizar categoria.'
+        )
+        
+        return
+      }
+      
+    } else {
+      
+      console.log('Creating category:', {
+        name,
+        slug,
+        color
+      })
+      
+      const response = await axios.post(
+      '/api/categories',
+      {
+        name,
+        slug,
+        color
+      },
+      {
+        headers: {
+          Authorization: authToken
+        }
+      }
+      ).catch(err => err.response)
+      
+      if(response.status === 201) {
+        
+        alert('Categoria criada com sucesso!')
+        
+        const { id } = response.data
+        
+        row.dataset.categoryId = id
+        
+      } else {
+        
+        alert(
+        response.data?.message
+        || 'Erro ao criar categoria.'
+        )
+        
+        return
+      }
+    }
+    
+    columns[0].innerHTML = `
+      <span class="table-text">
+        ${name}
+      </span>
+    `
+    
+    columns[1].innerHTML = `
+      <span class="table-text">
+        ${slug}
+      </span>
+    `
+    
+    columns[2].innerHTML = `
+      <div class="category-color-preview">
+
+        <div
+          class="category-color-box"
+          style="background: ${color};"
+          data-color="${color}"
+        ></div>
+
+        <span class="table-text">
+          ${color}
+        </span>
+
+      </div>
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn edit-btn"
+        onclick="editCategory(this)"
+      >
+        Editar
+      </button>
+    `
+  }
+  
+  const dataColors = Array.from(
+  document.querySelectorAll('[data-color]')
+  )
+  
+  for (const colorBox of dataColors) {
+    
+    const color = colorBox.dataset.color
+    
+    colorBox.style.background = color
+    
+  }
+  
+</script>
+
+</body>
+
+</html>

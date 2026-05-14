@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  
+  <meta charset="UTF-8">
+  
+  <meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+  >
+  
+  <title>Gerenciar Skills</title>
+  
+  <link
+  rel="stylesheet"
+  href="/styles/admin-categories.css"
+  >
+  
+  <%- include('../../partials/head.ejs') %>
+  
+</head>
+
+<body>
+  
+  <%- include('../../partials/header.ejs') %>
+  
+  <main class="admin-page">
+    
+    <!-- HEADER -->
+    
+    <div class="admin-header">
+      
+      <div>
+        
+        <h1 class="admin-title">
+          Skills
+        </h1>
+        
+        <p class="admin-subtitle">
+          Gerencie as habilidades disponíveis no sistema.
+        </p>
+        
+      </div>
+      
+      <button
+      class="add-category-btn"
+      id="add-skill-btn"
+      >
+      + Nova Skill
+    </button>
+    
+  </div>
+  
+  <!-- TABLE -->
+  
+  <div class="table-wrapper">
+    
+    <table class="categories-table">
+      
+      <thead>
+        
+        <tr>
+          
+          <th>Nome</th>
+          <th>Slug</th>
+          <th>Descrição</th>
+          
+          <th class="actions-column"></th>
+          
+        </tr>
+        
+      </thead>
+      
+      <tbody id="skills-table-body">
+        
+        <!-- SKILL -->
+        
+        <% skills.forEach(skill => { %>
+          
+          <tr data-skill-id="<%= skill.id %>">
+            
+            <td>
+              
+              <span class="table-text">
+                <%= skill.name %>
+              </span>
+              
+            </td>
+            
+            <td>
+              
+              <span class="table-text">
+                <%= skill.slug %>
+              </span>
+              
+            </td>
+            
+            <td>
+              
+              <span class="table-text">
+                <%= skill.description %>
+              </span>
+              
+            </td>
+            
+            <td class="actions-column">
+              
+              <button
+              class="table-action-btn edit-btn"
+              onclick="editSkill(this)"
+              >
+              Editar
+            </button>
+            
+          </td>
+          
+        </tr>
+        
+        <% }) %>
+        
+      </tbody>
+      
+    </table>
+    
+  </div>
+  
+</main>
+
+<script>
+  const addSkillButton = document.getElementById(
+  'add-skill-btn'
+  )
+  
+  const tableBody = document.getElementById(
+  'skills-table-body'
+  )
+  
+  addSkillButton.addEventListener('click', () => {
+    
+    const row = document.createElement('tr')
+    
+    row.innerHTML = `
+      <td>
+
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Nome da skill"
+        >
+
+      </td>
+
+      <td>
+
+        <input
+          type="text"
+          class="table-input"
+          placeholder="slug"
+        >
+
+      </td>
+
+      <td>
+
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Descrição"
+        >
+
+      </td>
+
+      <td class="actions-column">
+
+        <button
+          class="table-action-btn save-btn"
+          onclick="saveSkill(this)"
+        >
+          Salvar
+        </button>
+
+      </td>
+    `
+    
+    tableBody.appendChild(row)
+    
+  })
+  
+  async function editSkill(button) {
+    
+    const row = button.closest('tr')
+    
+    const columns = row.querySelectorAll('td')
+    
+    const skillId = row.dataset.skillId
+    
+    const name = columns[0]
+    .innerText
+    .trim()
+    
+    const slug = columns[1]
+    .innerText
+    .trim()
+    
+    const description = columns[2]
+    .innerText
+    .trim()
+    
+    columns[0].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${name}"
+      >
+    `
+    
+    columns[1].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${slug}"
+      >
+    `
+    
+    columns[2].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${description}"
+      >
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn save-btn"
+        onclick="saveSkill(this, ${skillId})"
+      >
+        Salvar
+      </button>
+    `
+    
+  }
+  
+  async function saveSkill(button) {
+    
+    const row = button.closest('tr')
+    
+    const inputs = row.querySelectorAll('input')
+    
+    const columns = row.querySelectorAll('td')
+    
+    const skillId = row.dataset.skillId
+    
+    const name = inputs[0].value.trim()
+    
+    const slug = (
+    inputs[1].value.trim()
+    || name
+    )
+    .replace(/\s+/g, '-')
+    .toLowerCase()
+    
+    const description = inputs[2].value.trim()
+    
+    if(!name) {
+      alert('O nome da skill é obrigatório.')
+      return
+    }
+    
+    if(!slug) {
+      alert('O slug da skill é obrigatório.')
+      return
+    }
+    
+    const authToken = getCookie('session_token')
+    
+    if(skillId) {
+      
+      console.log('Updating skill:', {
+        id: skillId,
+        name,
+        slug,
+        description
+      })
+      
+      const response = await axios.patch(
+      `/api/skills/${skillId}`,
+      {
+        name,
+        slug,
+        description
+      },
+      {
+        headers: {
+          Authorization: authToken
+        }
+      }
+      ).catch(err => err.response)
+      
+      if(response.status === 200) {
+        alert('Skill atualizada com sucesso!')
+      } else {
+        alert(
+        response.data?.message
+        || 'Erro ao atualizar skill.'
+        )
+        
+        return
+      }
+      
+    } else {
+      
+      console.log('Creating skill:', {
+        name,
+        slug,
+        description
+      })
+      
+      const response = await axios.post(
+      '/api/skills',
+      {
+        name,
+        slug,
+        description
+      },
+      {
+        headers: {
+          Authorization: authToken
+        }
+      }
+      ).catch(err => err.response)
+      
+      if(response.status === 201) {
+        
+        alert('Skill criada com sucesso!')
+        
+        const { id } = response.data
+        
+        row.dataset.skillId = id
+        
+      } else {
+        
+        alert(
+        response.data?.message
+        || 'Erro ao criar skill.'
+        )
+        
+        return
+      }
+    }
+    
+    columns[0].innerHTML = `
+      <span class="table-text">
+        ${name}
+      </span>
+    `
+    
+    columns[1].innerHTML = `
+      <span class="table-text">
+        ${slug}
+      </span>
+    `
+    
+    columns[2].innerHTML = `
+      <span class="table-text">
+        ${description}
+      </span>
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn edit-btn"
+        onclick="editSkill(this)"
+      >
+        Editar
+      </button>
+    `
+  }
+</script>
+
+</body>
+
+</html>

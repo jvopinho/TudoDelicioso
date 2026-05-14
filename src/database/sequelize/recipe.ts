@@ -137,3 +137,40 @@ RecipeAuthor.init(
   },
 )
 
+export class RecipeCategory extends Model<
+  InferAttributes<RecipeCategory>,
+  InferCreationAttributes<RecipeCategory>
+> {
+  declare recipeId: number
+
+  declare categoryId: number
+}
+
+RecipeCategory.init(
+  {
+    categoryId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'categories',
+        key: 'id',
+      },
+    },
+    recipeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'recipes',
+        key: 'id',
+      },
+    },
+  },
+  {
+    sequelize,
+    modelName: 'RecipeCategory',
+    tableName: 'recipe_categories',
+  },
+)
+

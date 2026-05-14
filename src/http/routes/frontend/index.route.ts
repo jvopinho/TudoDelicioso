@@ -3,10 +3,14 @@ import { Router } from 'express'
 import { frontendAuthenticate } from '@/http/middlewares/auth-middleware'
 import { RecipesService } from '@/services/recipes-service'
 
+import { adminFrontendRoute } from './admin.route'
+import { profileFrontendRoute } from './profile.route'
 import { recipesFrontendRoute } from './recipes.route'
 
 export const frontendRoute = Router()
   .use('/recipes', recipesFrontendRoute)
+  .use('/admin', adminFrontendRoute)
+  .use('/profile', profileFrontendRoute)
 
 const recipesService = new RecipesService()
 

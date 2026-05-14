@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  
+  <meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+  >
+  
+  <title>Painel Administrativo</title>
+  
+  <link rel="stylesheet" href="/styles/admin-users.css">
+  
+  <%- include('../../partials/head.ejs') %>
+</head>
+
+<body>
+  
+  <%- include('../../partials/header.ejs') %>
+  
+  <main class="admin-page">
+    
+    <div class="admin-header">
+      
+      <div>
+        <h1 class="admin-title">
+          Usuários Ativos
+        </h1>
+        
+        <p class="admin-subtitle">
+          Gerencie os usuários cadastrados na plataforma.
+        </p>
+      </div>
+      
+      <button
+      class="add-user-btn"
+      id="add-user-btn"
+      >
+      + Novo Usuário
+    </button>
+    
+  </div>
+  
+  <!-- TABLE -->
+  
+  <div class="table-wrapper">
+    
+    <table class="users-table">
+      
+      <thead>
+        
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Senha</th>
+          <th class="actions-column"></th>
+        </tr>
+        
+      </thead>
+      
+      <tbody id="users-table-body">
+        <% users.forEach(user => { %>
+          <tr data-user-id="<%= user.id %>">
+            <td>
+              <span class="table-text">
+                <%= user.name %>
+              </span>
+            </td>
+            
+            <td>
+              <span class="table-text">
+                <%= user.email %>
+              </span>
+            </td>
+            
+            <td>
+              <span class="table-text">
+                ••••••••
+              </span>
+            </td>
+            
+            <td class="actions-column">
+              
+              <button
+              class="table-action-btn edit-btn"
+              onclick="editUser(this)"
+              >
+              Editar
+            </button>
+            
+          </td>
+        </tr>
+        <% }) %>
+        
+      </tbody>
+      
+    </table>
+    
+  </div>
+  
+</main>
+
+<script>
+  const addUserButton = document.getElementById('add-user-btn')
+  const tableBody = document.getElementById('users-table-body')
+  
+  addUserButton.addEventListener('click', () => {
+    
+    const row = document.createElement('tr')
+    
+    row.innerHTML = `
+      <td>
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Nome do usuário"
+        >
+      </td>
+
+      <td>
+        <input
+          type="email"
+          class="table-input"
+          placeholder="E-mail"
+        >
+      </td>
+
+      <td>
+        <input
+          type="text"
+          class="table-input"
+          placeholder="Senha"
+        >
+      </td>
+
+      <td class="actions-column">
+
+        <button
+          class="table-action-btn save-btn"
+          onclick="saveUser(this, null)"
+        >
+          Salvar
+        </button>
+      </td>
+    `
+    
+    tableBody.appendChild(row)
+    
+  })
+  
+  async function editUser(button) {
+    
+    const row = button.closest('tr')
+    const columns = row.querySelectorAll('td')
+    const userId = row.dataset.userId
+    
+    const name = columns[0].innerText.trim()
+    const email = columns[1].innerText.trim()
+    
+    
+    columns[0].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        value="${name}"
+      >
+    `
+    
+    columns[1].innerHTML = `
+      <input
+        type="email"
+        class="table-input"
+        value="${email}"
+      >
+    `
+    
+    columns[2].innerHTML = `
+      <input
+        type="text"
+        class="table-input"
+        placeholder="Nova senha"
+      >
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn save-btn"
+        onclick="saveUser(this, ${userId})"
+      >
+        Salvar
+      </button>
+    `
+  }
+  
+  async function saveUser(button) {
+    
+    const row = button.closest('tr')
+    
+    const inputs = row.querySelectorAll('input')
+    const columns = row.querySelectorAll('td')
+    
+    const userId = row.dataset.userId
+    
+    const name = inputs[0].value || undefined
+    const email = inputs[1].value || undefined
+    const password = inputs[2].value || undefined
+    
+    if(!name) {
+      alert('O nome do usuário é obrigatório.')
+      return
+    }
+    
+    if(!email) {
+      alert('O email do usuário é obrigatório.')
+      return
+    }
+    
+    if(!password && !userId) {
+      alert('A senha do usuário é obrigatória.')
+      return
+    }
+    
+    if(password && password.length < 6) {
+      alert('A senha deve conter no mínimo 6 caracteres.')
+      return
+    }
+
+    if(userId && password && !confirm('Tem certeza que deseja alterar a senha deste usuário?')) {
+      return
+    }
+    
+    const authToken = getCookie('session_token')
+    
+    if(userId) {
+      console.log('Updating user:', {
+        id: userId,
+        name,
+        email,
+        password
+      })
+      
+      const response = await axios.patch(`/api/users/${userId}`, {
+        name,
+        email,
+        password
+      }, {
+        headers: {
+          'Authorization': authToken
+        }
+      }).catch(err => err.response)
+
+      if(response.status === 200) {
+        alert('Usuário atualizado com sucesso!')
+      } else {
+        alert(response.data?.message || 'Erro ao atualizar usuário. Por favor, tente novamente.')
+        return
+      }
+    } else {
+      console.log('Creating user:', {
+        name,
+        email,
+        password
+      })
+      
+      const response = await axios.post('/api/users', {
+        name,
+        email,
+        password
+      }, {
+        headers: {
+          'Authorization': authToken
+        }
+      }).catch(err => err.response)
+
+      if(response.status === 201) {
+        alert('Usuário criado com sucesso!')
+        const { id } = response.data
+        row.dataset.userId = id
+      } else {
+        alert(response.data?.message || 'Erro ao criar usuário. Por favor, tente novamente.')
+        return
+      }
+    }
+    
+    columns[0].innerHTML = `
+      <span class="table-text">
+        ${name}
+      </span>
+    `
+    
+    columns[1].innerHTML = `
+      <span class="table-text">
+        ${email}
+      </span>
+    `
+    
+    columns[2].innerHTML = `
+      <span class="table-text">
+        ••••••••
+      </span>
+    `
+    
+    columns[3].innerHTML = `
+      <button
+        class="table-action-btn edit-btn"
+        onclick="editUser(this)"
+      >
+        Editar
+      </button>
+    `
+  }
+</script>
+
+</body>
+</html>
