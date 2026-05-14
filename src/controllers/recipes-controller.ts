@@ -5,12 +5,21 @@ import { Comment } from '@/database/mongoose/comment'
 import { Category } from '@/database/sequelize/category'
 import { Recipe, RecipeAuthor, RecipeCategory } from '@/database/sequelize/recipe'
 import { User } from '@/database/sequelize/user'
-import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
+import { AuthMiddleware, SessionMiddleware } from '@/http/middlewares/auth-middleware'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
 import { CreateCommentDTO, CreateRecipeDTO } from '@/schemas/recipe-dto'
 import { UpdateRecipeDTO } from '@/schemas/recipe-dto'
+import { CategoriesService } from '@/services/categories-service'
+import { RecipesService } from '@/services/recipes-service'
+import { UsersService } from '@/services/users-service'
 
 export class RecipesController {
+  private categoriesService = new CategoriesService()
+
+  private recipesService = new RecipesService()
+
+  private usersService = new UsersService()
+
   @AuthMiddleware({ onlyAuthenticated: true })
   @BodyMiddleware(CreateRecipeDTO)
   async createRecipe(req: AuthenticatedRequest, res: AppResponse) {
@@ -251,5 +260,100 @@ export class RecipesController {
     })
 
     res.status(201).json({ id: comment._id })
+  }
+
+  @SessionMiddleware({ onlyAuthenticated: true })
+  async viewCreate(req: AuthenticatedRequest, res: AppResponse) {
+    const user = req.getUser()!.toJSON()
+    
+    const recipes = await this.recipesService.getRecipes({ ascending: false })
+    const categories = await this.categoriesService.findAllCategories()
+    const users = (await this.usersService.findAll({ omit: [user.id] })).map(u => ({ id: u.id, name: u.name }))
+
+    res.render('recipes/create', {
+      user,
+      categories,
+      users,
+    })
+  }
+
+  @SessionMiddleware({ onlyAuthenticated: false })
+  async viewSearch(req: AuthenticatedRequest, res: AppResponse) {
+    const user = req.getUser()?.toJSON()
+
+    const title = decodeURIComponent(String(req.query.title || '').trim())
+    const category = decodeURIComponent(String(req.query.category || '').trim())
+    
+    const recipes = await this.recipesService.getRecipes({ 
+      ascending: false, 
+      query: title, 
+      categoryId: category ? parseInt(category) : undefined, 
+    })
+    const categories = await this.categoriesService.findAllCategories()
+    const randomRecipes = await this.recipesService.getRandomRecipes(4)
+
+    res.render('recipes/search', {
+      recipes,
+      user,
+      randomRecipes,
+      categories,
+    })
+  }
+
+  @SessionMiddleware({ onlyAuthenticated: false })
+  async viewRecipe(req: AuthenticatedRequest, res: AppResponse) {
+    const user = req.getUser()?.toJSON()
+    
+    const recipe = await this.recipesService.getRecipeById(parseInt(req.params.recipe_id! as string))
+
+    if(!recipe) {
+      return res.redirect('/404')
+    }
+
+    const similarRecipes = await this.recipesService.getRandomRecipes(3)
+    const comments = await this.recipesService.getComments(recipe.id)
+
+    res.render('recipes/main', {
+      recipe,
+      user,
+      similarRecipes,
+      comments,
+    })
+  }
+
+  @SessionMiddleware({ onlyAuthenticated: true })
+  async viewEdit(req: AuthenticatedRequest, res: AppResponse) {
+    const user = req.getUser()!.toJSON()
+
+    const recipe = await this.recipesService.getRecipeById(parseInt(req.params.recipe_id! as string))
+
+    if(!recipe) {
+      return res.redirect('/')
+    }
+
+    // authorization: only ADMIN or an author can edit
+    const isAuthor = (recipe.authors || []).some((a: any) => a.id === user?.id)
+
+    if(user?.role !== 'ADMIN' && !isAuthor) {
+      return res.redirect('/403')
+    }
+
+    const authorIndex = (recipe.authors || []).findIndex((a: any) => a.id === user?.id)
+
+    if(authorIndex > -1) {
+      const [author] = recipe.authors.splice(authorIndex, 1)
+
+      recipe.authors.unshift(author)
+    }
+
+    const categories = await this.categoriesService.findAllCategories()
+    const users = (await this.usersService.findAll({ omit: [user.id] })).map(u => ({ id: u.id, name: u.name }))
+
+    res.render('recipes/edit', {
+      recipe,
+      user,
+      categories,
+      users,
+    })
   }
 }

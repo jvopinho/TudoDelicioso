@@ -47,6 +47,41 @@ async function authenticate(authHeader: string): Promise<[true, User] | [false, 
   return [true, user]
 }
 
+export function SessionMiddleware({ onlyAuthenticated, onlyAdmin }: AuthMiddlewareOptions) {
+  if(onlyAdmin && !onlyAuthenticated) {
+    throw new Error('Invalid AuthMiddleware configuration: onlyAdmin cannot be true if onlyAuthenticated is false')
+  }
+
+  return (_this: any, methodName: string, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value
+
+    descriptor.value = async function (req: AppRequest, res: AppResponse, next: NextFunction) {
+      const cookies = parseCookies(req.headers.cookie)
+
+      const [authenticated, result] = await authenticate(cookies.get('session_token')!)
+
+      if(authenticated) {
+        const user = result as User
+
+        if(onlyAdmin && user.role !== 'ADMIN') {
+          return res.redirect('/403')
+        }
+
+        req.isAuthenticated = () => authenticated as true
+        req.getUser = () => user
+      } else {
+        if(onlyAuthenticated) {
+          return res.redirect('/login')
+        }
+      
+        req.isAuthenticated = () => false
+      }
+
+      return originalMethod.call(this, req, res, next)
+    }
+  }
+}
+
 export function frontendAuthenticate({ onlyAuthenticated = true, onlyAdmin = false }: AuthMiddlewareOptions = {}) {
   return (async (req: AppRequest, res: AppResponse, next: NextFunction) => {
     const cookies = parseCookies(req.headers.cookie)
