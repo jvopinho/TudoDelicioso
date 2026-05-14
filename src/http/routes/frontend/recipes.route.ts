@@ -87,7 +87,7 @@ recipesFrontendRoute.get('/:recipe_id/edit', frontendAuthenticate({ onlyAuthenti
   const isAuthor = (recipe.authors || []).some((a: any) => a.id === user?.id)
 
   if(user?.role !== 'ADMIN' && !isAuthor) {
-    return res.redirect('/forbidden')
+    return res.redirect('/403')
   }
 
   const authorIndex = (recipe.authors || []).findIndex((a: any) => a.id === user?.id)

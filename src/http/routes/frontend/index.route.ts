@@ -33,7 +33,27 @@ frontendRoute.get('/', frontendAuthenticate({ onlyAuthenticated: false }), async
 })
 
 frontendRoute.get('/login', (req, res) => {
+  const user = req.getUser()?.toJSON()
+
   res.render('login', {
+    user,
+  })
+})
+
+frontendRoute.get('/403', frontendAuthenticate({ onlyAuthenticated: false }), (req, res) => {
+  const user = req.getUser()?.toJSON()
+
+  res.status(403).render('403', {
     user: null,
   })
 })
+
+frontendRoute.get('/404', frontendAuthenticate({ onlyAuthenticated: false }), (req, res) => {
+  const user = req.getUser()?.toJSON()
+
+  res.status(404).render('404', {
+    user: null,
+  })
+})
+
+// \

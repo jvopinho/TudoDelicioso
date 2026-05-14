@@ -57,7 +57,7 @@ export function frontendAuthenticate({ onlyAuthenticated = true, onlyAdmin = fal
       const user = result as User
 
       if(onlyAdmin && user.role !== 'ADMIN') {
-        return res.redirect('/forbidden')
+        return res.redirect('/403')
       }
 
       req.isAuthenticated = () => authenticated as true
