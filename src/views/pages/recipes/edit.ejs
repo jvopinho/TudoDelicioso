@@ -16,9 +16,7 @@
     content="width=device-width, initial-scale=1.0"
   />
 
-  <title>
-    Editar Receita
-  </title>
+  <title>Tudo Delicioso - Editar Receita</title>
 
 </head>
 
@@ -90,7 +88,7 @@
                   name="categories"
                   value="<%= category.id %>"
 
-                  <%= recipe.categories?.some(c => c == category.id)
+                  <%= recipe.categories?.some(c => c.id == category.id)
                     ? 'checked'
                     : ''
                   %>

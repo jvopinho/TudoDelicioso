@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Lasanha Cremosa de Frango</title>
+    <title>Tudo Delicioso - <%= recipe.title %></title>
 
     <link rel="stylesheet" href="/styles/recipe.css">
 
@@ -36,9 +36,14 @@
 
         <div class="recipe-body">
 
-          <div class="recipe-category">
-            Massas
-          </div>
+          <% recipe.categories.forEach(category => { %>
+            <a
+              href="/recipes/search?category=<%= category.id %>"
+              class="recipe-category"
+            >
+              <%= category.name %>
+            </a>
+          <% }) %>
 
           <h1 class="recipe-title">
             <%= recipe.title %>

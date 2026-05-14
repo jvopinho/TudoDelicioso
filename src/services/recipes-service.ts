@@ -1,5 +1,6 @@
 import { Op, Sequelize } from 'sequelize'
 
+import { sql } from '@/utils/sql'
 import { timeAgo } from '@/utils/time-utils'
 
 import { Comment } from '@/database/mongoose/comment'
@@ -10,7 +11,7 @@ import { User } from '@/database/sequelize/user'
 interface SearchRecipesOptions {
   query?: string
   limit?: number
-  before?: number
+  categoryId?: number
   ascending?: boolean
 }
 
@@ -20,13 +21,22 @@ export class RecipesService {
 
     if(search.query) {
       where.title = {
-        [Op.like]: `%${search.query}%`,
+        [Op.iLike]: `%${search.query}%`,
       }
     }
 
-    if(search.before) {
-      where.createdAt = {
-        [Op.lt]: new Date(search.before),
+    let recipesIdsByCategory: number[] | null = null
+
+    if(search.categoryId) {
+      const recipesCategories = await RecipeCategory.findAll({
+        where: {
+          categoryId: search.categoryId,
+        },
+      })
+
+      recipesIdsByCategory = recipesCategories.map(rc => rc.recipeId)
+      where.id = {
+        [Op.in]: recipesIdsByCategory,
       }
     }
     
@@ -76,16 +86,18 @@ export class RecipesService {
     //   { bind: [id], type: 'SELECT' },
     // )
 
-    const categories = await RecipeCategory.findAll({
-      where: {
-        recipeId: id,
+    const categories = await sequelize.query(
+      sql`SELECT c.id, c.name FROM recipe_categories AS rc INNER JOIN categories AS c ON c.id = rc."categoryId" WHERE rc."recipeId" = $1`,
+      {
+        bind: [id],
+        type: 'SELECT',
       },
-    })
+    ) as Array<{ id: number, name: string }>
 
     return {
       ...recipe.toJSON(),
       authors,
-      categories: categories.map(c => c.categoryId),
+      categories,
     }
   }
 

@@ -138,6 +138,7 @@ header {
   color: white;
   font-size: 18px;
   cursor: pointer;
+  background-color: transparent;
 }
 
 /* ZIGZAG */

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <%- include('../partials/head') %>
+    <%- include('../../partials/head') %>
     <link rel="stylesheet" href="/styles/recipe-list.css">
   </head>
 <head>
@@ -10,12 +10,6 @@
   <title>Tudo Delicioso</title>
 
   <style>
-    /* MAIN */
-
-    /* RECIPE CARD */
-
-    
-
     /* GALLERY */
 
     .gallery {
@@ -94,7 +88,7 @@
   </style>
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../../partials/header') %>
 
   
   <main class="container">
@@ -102,13 +96,13 @@
     <!-- LEFT -->
 
     <section class="left-column">
-      <h2 class="section-title">ÚLTIMAS RECEITAS PUBLICADAS</h2>
+      <h2 class="section-title">RECEITAS ENCONTRADAS</h2>
 
       <!-- CARD -->
 
       <div id="recipes-list">
         <% recipes.forEach((recipe, i) => { %>
-          <%- include('../partials/recipe-card', { recipe }) %>  
+          <%- include('../../partials/recipe-card', { recipe }) %>  
         <% }); %>
       </div>
     </section>

@@ -31,6 +31,28 @@ recipesFrontendRoute.get('/create', frontendAuthenticate({ onlyAuthenticated: tr
   })
 })
 
+recipesFrontendRoute.get('/search', frontendAuthenticate({ onlyAuthenticated: false }), async(req, res) => {
+  const user = req.getUser()?.toJSON()
+
+  const title
+    = decodeURIComponent(String(req.query.title || '').trim())
+
+  const category
+    = decodeURIComponent(String(req.query.category || '').trim())
+  
+  const recipes = await recipesService.getRecipes({ ascending: false, query: title, categoryId: category ? parseInt(category) : undefined })
+  const categories = await categoriesService.findAllCategories()
+
+  const randomRecipes = await recipesService.getRandomRecipes(4)
+
+  res.render('recipes/search', {
+    recipes,
+    user,
+    randomRecipes,
+    categories,
+  })
+})
+
 recipesFrontendRoute.get('/:recipe_id', frontendAuthenticate({ onlyAuthenticated: false }), async(req, res) => {
   const user = req.getUser()?.toJSON()
   
@@ -39,8 +61,6 @@ recipesFrontendRoute.get('/:recipe_id', frontendAuthenticate({ onlyAuthenticated
   if(!recipe) {
     return res.redirect('/404')
   }
-
-  console.log(recipe)
 
   const similarRecipes = await recipesService.getRandomRecipes(3)
 

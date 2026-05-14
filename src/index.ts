@@ -17,9 +17,9 @@ async function main() {
   if(!adminUserAlreadyExists) {
     const user = new User({
       id: 1,
-      name: 'John Doe',
-      email: 'johndoe@email.com',
-      passwordHash: await PasswordAdapter.hashPassword('123456'),
+      name: 'Tudo Delicioso',
+      email: 'admin@tudodelicioso.br',
+      passwordHash: await PasswordAdapter.hashPassword('admin123'),
       role: 'ADMIN',
     })
 
