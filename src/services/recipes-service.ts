@@ -1,7 +1,11 @@
 import { Op, Sequelize } from 'sequelize'
 
+import { timeAgo } from '@/utils/time-utils'
+
+import { Comment } from '@/database/mongoose/comment'
 import { sequelize } from '@/database/sequelize'
 import { Recipe, RecipeCategory } from '@/database/sequelize/recipe'
+import { User } from '@/database/sequelize/user'
 
 interface SearchRecipesOptions {
   query?: string
@@ -11,7 +15,7 @@ interface SearchRecipesOptions {
 }
 
 export class RecipesService {
-  async getRecipes(search: SearchRecipesOptions = { limit: 10 }) {
+  async getRecipes(search: SearchRecipesOptions = {}) {
     const where: Record<string, any> = {}
 
     if(search.query) {
@@ -28,7 +32,7 @@ export class RecipesService {
     
     const recipes = await Recipe.findAll({
       where,
-      limit: search.limit ?? 10,
+      limit: search.limit,
       order: [['createdAt', search.ascending ? 'ASC' : 'DESC']],
     })
 
@@ -102,5 +106,31 @@ export class RecipesService {
     })
 
     return recipes
+  }
+
+  async getComments(recipeId: number) {
+    const comment = await Comment.find({
+      recipeId,
+    }, null, { sort: { createdAt: -1 } })
+
+    const authorsIds = comment.map(c => parseInt(c.authorId.toString(), 10))
+
+    const authors = await User.findAll({
+      where: {
+        id: {
+          [Op.in]: authorsIds,
+        },
+      },
+    })
+
+    return comment.map(c => {
+      const author = authors.find(a => parseInt(a.id.toString(), 10) === c.authorId)
+
+      return {
+        author: author?.name ?? 'Usuário desconhecido',
+        content: c.content,
+        ago: timeAgo(c.createdAt.getTime()),
+      }
+    })
   }
 }

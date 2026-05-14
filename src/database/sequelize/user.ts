@@ -36,7 +36,6 @@ User.init(
   {
     id: {
       type: DataTypes.BIGINT,
-      autoIncrement: true,
       primaryKey: true,
       defaultValue: () => Date.now(),
     },

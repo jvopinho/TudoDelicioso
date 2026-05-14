@@ -9,3 +9,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     env_file:
       - .env
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "${MONGO_PORT}:27017"
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}

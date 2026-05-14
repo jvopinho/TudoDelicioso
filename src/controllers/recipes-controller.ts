@@ -1,12 +1,13 @@
 import { Op } from 'sequelize'
 
 import { AppResponse, AuthenticatedRequest } from '@/@types/express'
+import { Comment } from '@/database/mongoose/comment'
 import { Category } from '@/database/sequelize/category'
 import { Recipe, RecipeAuthor, RecipeCategory } from '@/database/sequelize/recipe'
 import { User } from '@/database/sequelize/user'
 import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
-import { CreateRecipeDTO } from '@/schemas/recipe-dto'
+import { CreateCommentDTO, CreateRecipeDTO } from '@/schemas/recipe-dto'
 import { UpdateRecipeDTO } from '@/schemas/recipe-dto'
 
 export class RecipesController {
@@ -176,7 +177,7 @@ export class RecipesController {
     res.json({ id: recipe.id })
   }
 
-  @AuthMiddleware({ onlyAuthenticated: false })
+  @AuthMiddleware({ onlyAuthenticated: true })
   async uploadRecipeImage(req: AuthenticatedRequest, res: AppResponse) {
     const file = req.file
 
@@ -195,5 +196,60 @@ export class RecipesController {
     await Recipe.update({ thumbnail: file.filename }, { where: { id: recipe_id } })
 
     res.json({ message: 'Em breve!' })
+  }
+
+  @AuthMiddleware({ onlyAuthenticated: true })
+  async deleteRecipe(req: AuthenticatedRequest, res: AppResponse) {
+    const recipeId = parseInt(req.params.recipe_id as string, 10)
+
+    const recipe = await Recipe.findByPk(recipeId)
+
+    if(!recipe) {
+      return res.status(404).json({ message: 'Receita não encontrada' })
+    }
+
+    const user = req.getUser()
+
+    if(user.role !== 'ADMIN') {
+      const author = await RecipeAuthor.findOne({ where: { recipeId: recipe.id, userId: user.id } })
+
+      if(!author) {
+        return res.status(403).json({ message: 'Forbidden' })
+      }
+    }
+
+    await recipe.destroy()
+
+    await RecipeAuthor.destroy({ where: { recipeId: recipe.id } })
+    await RecipeCategory.destroy({ where: { recipeId: recipe.id } })
+
+    res.status(204).send()
+  }
+
+  @AuthMiddleware({ onlyAuthenticated: true })
+  @BodyMiddleware(CreateCommentDTO)
+  async createComment(req: AuthenticatedRequest, res: AppResponse) {
+    const user = req.getUser()
+    const body = req.body as CreateCommentDTO
+
+    const recipeId = parseInt(req.params.recipe_id as string, 10)
+
+    const recipe = await Recipe.findByPk(recipeId)
+
+    if(!recipe) {
+      return res.status(404).json({ message: 'Receita não encontrada' })
+    }
+
+    if(!body.content.trim()) {
+      return res.status(400).json({ message: 'Conteúdo do comentário é obrigatório' })
+    }
+
+    const comment = await Comment.create({
+      authorId: parseInt(user.id.toString(), 10),
+      recipeId,
+      content: body.content.trim(),
+    })
+
+    res.status(201).json({ id: comment._id })
   }
 }

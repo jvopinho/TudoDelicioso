@@ -102,7 +102,7 @@
     <!-- LEFT -->
 
     <section class="left-column">
-      <h2 class="section-title">LATEST RECIPES</h2>
+      <h2 class="section-title">ÚLTIMAS RECEITAS PUBLICADAS</h2>
 
       <!-- CARD -->
 
@@ -121,32 +121,28 @@
 
         <% randomRecipes.forEach(recipe => { %>
           <div class="gallery-item">
-            <img src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '#' %>">
+            <a href="/recipes/<%= recipe.id %>">
+              <img src="<%= recipe.thumbnail ? `/thumbnails/${recipe.thumbnail}` : '#' %>" alt="<%= recipe.title %>">
+            </a>
           </div>
         <% }) %>
 
       </div>
 
-      <h3 class="section-title">CATEGORIES</h3>
+      <h3 class="section-title">CATEGORIAS</h3>
 
       <div class="categories">
 
         <div class="category-column">
-
-          <div class="category-item active">Beef</div>
-          <div class="category-item">Chicken</div>
-          <div class="category-item">Egg</div>
-          <div class="category-item">Cheese</div>
-
+          <% categories.slice(0, categories.length % 2 ? Math.floor(categories.length / 2) + 1 : categories.length / 2).forEach((category, i) => { %>
+            <div class="category-item <%= i == 0 ? 'active' : '' %>"><%= category.name %></div>
+          <% }) %>
         </div>
 
         <div class="category-column">
-
-          <div class="category-item active">Appetizer</div>
-          <div class="category-item">Breakfast</div>
-          <div class="category-item">Bakery</div>
-          <div class="category-item">Dessert</div>
-
+          <% categories.slice(categories.length % 2 ? Math.floor(categories.length / 2) + 1 : categories.length / 2).forEach((category, i) => { %>
+             <div class="category-item <%= i == 0 ? 'active' : '' %>"><%= category.name %></div>
+          <% }) %>
         </div>
 
       </div>

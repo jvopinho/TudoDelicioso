@@ -3,12 +3,9 @@ import { PasswordAdapter } from '@/adapters/password-adapter'
 import { User } from '@/database/sequelize/user'
 import { AuthMiddleware } from '@/http/middlewares/auth-middleware'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
-import { UsersRepository } from '@/repositories'
 import { CreateUserDTO, UpdateUserDTO } from '@/schemas/user-dto'
 
 export class UsersController {
-  constructor(private readonly usersRepository: UsersRepository) {}
-
   @AuthMiddleware({ onlyAuthenticated: true, onlyAdmin: true })
   @BodyMiddleware(CreateUserDTO)
   async createUser(req: AuthenticatedRequest, res: AppResponse) {
@@ -38,15 +35,6 @@ export class UsersController {
     const user = req.getUser()
 
     res.json(user.toJSON())
-  }
-
-  @AuthMiddleware({ onlyAuthenticated: true, onlyAdmin: true })
-  async getAllUsers(req: AuthenticatedRequest, res: AppResponse) {
-    const params = req.query as { after?: string, limit?: string }
-    
-    const users = await this.usersRepository.findMany(params.after ? Number(params.after) : undefined, params.limit ? Number(params.limit) : undefined)
-
-    res.json(users.map(user => user.toJSON()))
   }
 
   @AuthMiddleware({ onlyAuthenticated: true, onlyAdmin: true })

@@ -6,7 +6,6 @@ import { parseCookies } from '@/utils/cookie-parse'
 import { AppRequest, AppResponse, AuthenticatedRequest } from '@/@types/express'
 import { User } from '@/database/sequelize/user'
 import { env } from '@/env'
-import { UsersRepository } from '@/repositories'
 
 interface AuthMiddlewareOptions {
   onlyAuthenticated?: boolean
@@ -18,8 +17,6 @@ export function isAuthenticated(req: AppRequest): req is AuthenticatedRequest {
 }
 
 async function authenticate(authHeader: string): Promise<[true, User] | [false, { status: number, message: string }]> {
-  const usersRepository = new UsersRepository()
-
   if(!authHeader) {
     return [false, { 
       status: 401, 
@@ -38,7 +35,7 @@ async function authenticate(authHeader: string): Promise<[true, User] | [false, 
     }]
   }
 
-  const user = await usersRepository.findById(token.user_id)
+  const user = await User.findByPk(token.user_id)
 
   if(!user) {
     return [false, { 

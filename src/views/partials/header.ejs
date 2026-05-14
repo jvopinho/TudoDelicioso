@@ -1,57 +1,66 @@
 <header>
   <div class="top-bar">
     <nav class="nav">
-
-      <div class="nav-item">
-        <span>Test</span>
-
-        <div class="dropdown">
-          <div>Appetizer</div>
-          <div>Breakfast</div>
-          <div>Bakery</div>
-          <div>Casserole</div>
-          <div>Cookies</div>
-        </div>
-      </div>
-
-      <div class="nav-item">
-        <% if (user) { %>
-          <span>Area do Usuário</span>
-          
-          <div class="dropdown">
-            <div>
-              <a href="/recipes/create">Nova Receita</a>
+        <div class="nav-item">
+          <% if (user) { %>
+            <span>Area do Usuário</span>
+            
+            <div class="dropdown">
+              <div>
+                <a href="/recipes/create">Nova Receita</a>
+              </div>
+              
+              <div>
+                <a href="/profile/recipes">Minhas Receitas</a>
+              </div>
+            </div>
+            <% } else { %>
+              <span>
+                <a href="/login">Login</a>
+              </span>
+              <% } %>
             </div>
 
-            <% if (user.role == 'ADMIN') { %>
-              <div>
-                <a href="/admin/users">Gerenciar Usuários</a>
-              </div>
-            <% } %>
+            <div class="nav-item">
+              <% if (user && user.role == 'ADMIN') { %>
+                <span>Area do Administrador</span>
+                
+                <div class="dropdown">
+                  <div>
+                    <a href="/admin/users">Gerenciar Usuários</a>
+                  </div>
+                  
+                  <div>
+                    <a href="/admin/recipes">Gerenciar Receitas</a>
+                  </div>
+                  
+                  <div>
+                    <a href="/admin/categories">Gerenciar Categorias</a>
+                  </div>
+                  
+                  <div>
+                    <a href="/admin/skills">Gerenciar Habilidades</a>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </nav>
+        </div>
+        
+        <div class="header-main">
+          
+          <div class="logo-area">
+            <a href="/">
+              <img src="/images/tudo-delicioso.svg" alt="Logo">
+            </a>
           </div>
-        <% } else { %>
-          <span>
-            <a href="/login">Login</a>
-          </span>
-        <% } %>
-      </div>
-    </nav>
-  </div>
-
-  <div class="header-main">
-
-    <div class="logo-area">
-      <a href="/">
-        <img src="/images/tudo-delicioso.svg" alt="Logo">
-      </a>
-    </div>
-
-    <div class="search-box">
-      <input type="text" />
-      <span class="search-icon">🔍</span>
-    </div>
-
-  </div>
-
-  <div class="zigzag"></div>
-</header>
+          
+          <!-- <div class="search-box">
+            <input type="text" />
+            <span class="search-icon">🔍</span>
+          </div> -->
+          
+        </div>
+        
+        <div class="zigzag"></div>
+      </header>

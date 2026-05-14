@@ -13,7 +13,17 @@
       </h3>
       
       <p class="recipe-meta">
-        by Admin | 0 comments
+        <% if(recipe.prepTime) { %>
+          <span>⏱ <%= recipe.prepTime %> min</span>
+        <% } %>
+        
+        <% if(recipe.difficulty == 'EASY') { %>
+          <span style="background-color: rgba(0, 255, 34, 0.6); color: rgb(0, 122, 10);"> 👨‍🍳 <%= recipe.difficulty %> </span>
+        <% } else if(recipe.difficulty == 'MEDIUM') { %>
+          <span style="background-color: rgba(255, 230, 0, 0.6); color: rgb(122, 110, 0);"> 👨‍🍳👨‍🍳 <%= recipe.difficulty %></span>
+        <% } else { %>
+          <span style="background-color: rgba(255, 0, 0, 0.6); color: rgb(122, 0, 0);"> 👨‍🍳👨‍🍳👨‍🍳 <%= recipe.difficulty %></span>
+        <% } %>
       </p>
     </div>
   </div>

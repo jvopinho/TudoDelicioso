@@ -256,18 +256,24 @@
 
           <!-- FORM -->
 
+          <!-- FORM -->
+
           <% if(user) { %>
 
             <div class="comments-form">
 
               <textarea
                 class="comment-textarea"
+                id="comment-textarea"
                 placeholder="Escreva um comentário..."
               ></textarea>
 
               <div class="comment-actions">
 
-                <button class="comment-submit-btn">
+                <button
+                  class="comment-submit-btn"
+                  id="comment-submit-btn"
+                >
                   Publicar Comentário
                 </button>
 
@@ -299,47 +305,7 @@
 
           <% } %>
 
-          <!-- LIST -->
-
           <div class="comments-list">
-
-            <!-- ITEM -->
-
-            <div class="comment-item">
-
-              <div class="comment-avatar">
-                J
-              </div>
-
-              <div class="comment-content">
-
-                <div class="comment-header">
-
-                  <div>
-
-                    <div class="comment-author">
-                      João Silva
-                    </div>
-
-                    <div class="comment-date">
-                      há 2 horas
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div class="comment-text">
-                  Receita ficou incrível.
-                  Fiz no almoço de domingo
-                  e todo mundo gostou bastante.
-                </div>
-
-              </div>
-
-            </div>
-
-            <!-- ITEM -->
 
             <% comments.forEach(comment => { %>
 
@@ -376,39 +342,6 @@
               </div>
             <% }) %>
 
-            <div class="comment-item">
-
-              <div class="comment-avatar">
-                M
-              </div>
-
-              <div class="comment-content">
-
-                <div class="comment-header">
-
-                  <div>
-
-                    <div class="comment-author">
-                      Maria Oliveira
-                    </div>
-
-                    <div class="comment-date">
-                      há 5 horas
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div class="comment-text">
-                  Adicionei bacon na receita
-                  e ficou perfeita.
-                </div>
-
-              </div>
-
-            </div>
-
           </div>
 
         </div>
@@ -416,6 +349,87 @@
       </section>
 
     </main>
+
+    <script>
+      const commentTextarea = document.getElementById(
+        'comment-textarea'
+      )
+
+      const commentSubmitButton = document.getElementById(
+        'comment-submit-btn'
+      )
+
+      if(commentSubmitButton) {
+
+        commentSubmitButton.addEventListener(
+          'click',
+          async () => {
+
+            const content =
+              commentTextarea.value.trim()
+
+            if(!content) {
+
+              alert(
+                'O comentário não pode estar vazio.'
+              )
+
+              return
+
+            }
+
+            const authToken = getCookie(
+              'session_token'
+            )
+
+            const recipeId =
+              '<%= recipe.id %>'
+
+            commentSubmitButton.disabled = true
+
+            commentSubmitButton.innerText =
+              'Publicando...'
+
+            const response = await axios.post(
+
+              `/api/recipes/${recipeId}/comments`,
+
+              {
+                content
+              },
+
+              {
+                headers: {
+                  Authorization: authToken
+                }
+              }
+
+            ).catch(err => err.response)
+
+            commentSubmitButton.disabled = false
+
+            commentSubmitButton.innerText =
+              'Publicar Comentário'
+
+            if(response.status !== 201) {
+
+              alert(
+                response.data?.message
+                || 'Erro ao publicar comentário.'
+              )
+
+              return
+
+            }
+
+            window.location.reload()
+
+          }
+        )
+
+      }
+
+    </script>
 
   </body>
 </html>

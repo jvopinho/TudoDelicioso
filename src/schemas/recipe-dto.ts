@@ -18,3 +18,8 @@ export type CreateRecipeDTO = z.infer<typeof CreateRecipeDTO>
 export const UpdateRecipeDTO = CreateRecipeDTO.partial()
 
 export type UpdateRecipeDTO = z.infer<typeof UpdateRecipeDTO>
+
+export const CreateCommentDTO = z.object({
+  content: z.string().min(1, 'Conteúdo do comentário é obrigatório').max(2000, 'Conteúdo do comentário deve ter no máximo 2000 caracteres'),
+})
+export type CreateCommentDTO = z.infer<typeof CreateCommentDTO>

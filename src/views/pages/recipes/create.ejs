@@ -2,243 +2,463 @@
 <html lang="pt-BR">
 <head>
   <%- include('../../partials/head') %>
-  <link rel="stylesheet" href="/styles/create-recipe.css">
-  
+
+  <link
+    rel="stylesheet"
+    href="/styles/create-recipe.css"
+  >
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
   <title>Cookery Book</title>
 </head>
+
 <body>
-  <%- include('../../partials/header') %>  
+
+  <%- include('../../partials/header') %>
+
   <main class="create-container">
+
     <div class="create-card">
-      
+
       <h1 class="create-title">
         CRIAR NOVA RECEITA
       </h1>
-      
+
       <form>
-        
+
+        <!-- TÍTULO -->
+
         <div class="form-group">
+
           <label class="form-label required">
             Título da Receita
           </label>
-          
+
           <input
-          type="text"
-          class="form-input"
-          placeholder="Ex: Lasanha de Frango Cremosa"
-          id="recipe-title"
+            type="text"
+            class="form-input"
+            placeholder="Ex: Lasanha de Frango Cremosa"
+            id="recipe-title"
           >
+
         </div>
-        
+
+        <!-- DESCRIÇÃO -->
+
         <div class="form-group">
+
           <label class="form-label">
             Descrição
           </label>
-          
+
           <textarea
-          class="form-textarea"
-          placeholder="Descreva a receita..."
-          id="recipe-description"
-          style="min-height: 80px !important;"
+            class="form-textarea"
+            placeholder="Descreva a receita..."
+            id="recipe-description"
+            style="min-height: 80px !important;"
           ></textarea>
+
         </div>
-        
+
+        <!-- CATEGORIAS -->
+
         <div class="form-group">
+
           <label class="form-label required">
             Categorias
           </label>
-          
+
           <div class="multi-select">
 
             <% categories.forEach(category => { %>
+
               <label class="multi-option">
-                <input type="checkbox" name="categories" value="<%= category.id %>">
-                <span><%= category.name %></span>
+
+                <input
+                  type="checkbox"
+                  name="categories"
+                  value="<%= category.id %>"
+                >
+
+                <span>
+                  <%= category.name %>
+                </span>
+
               </label>
+
             <% }) %>
+
           </div>
+
         </div>
-        
+
+        <!-- IMAGEM -->
+
         <div class="form-group">
-          
+
           <label class="form-label">
             Upload da Imagem
           </label>
-          
-          <label class="upload-box" id="upload-box">
-            
+
+          <label
+            class="upload-box"
+            id="upload-box"
+          >
+
             <input
-            type="file"
-            class="upload-input"
-            accept="image/*"
-            id="recipe-image"
+              type="file"
+              class="upload-input"
+              accept="image/*"
+              id="recipe-image"
             >
-            
+
             <img
-            src=""
-            alt="Preview"
-            class="upload-preview"
-            id="upload-preview"
+              src=""
+              alt="Preview"
+              class="upload-preview"
+              id="upload-preview"
             >
-            
-            <div class="upload-placeholder" id="upload-placeholder">
-              
-              <div class="upload-icon">📷</div>
-              
+
+            <div
+              class="upload-placeholder"
+              id="upload-placeholder"
+            >
+
+              <div class="upload-icon">
+                📷
+              </div>
+
               <div class="upload-text">
                 Clique para enviar uma imagem
               </div>
-              
+
               <div class="upload-subtext">
                 PNG, JPG ou WEBP
               </div>
-              
+
             </div>
-            
+
           </label>
-          
+
         </div>
-        
+
+        <!-- INGREDIENTES -->
+
         <div class="form-group">
+
           <label class="form-label required">
             Ingredientes
           </label>
-          
-          <div class="ingredients-list" id="ingredients-list">
-            
+
+          <div
+            class="ingredients-list"
+            id="ingredients-list"
+          >
+
             <div class="ingredient-row">
+
               <input
-              type="text"
-              name="ingredient"
-              class="form-input"
-              placeholder="Ingrediente"
-              data-ingredient
+                type="text"
+                name="ingredient"
+                class="form-input"
+                placeholder="Ingrediente"
+                data-ingredient
               >
+
             </div>
-            
+
           </div>
-          
+
           <br>
-          
-          <button type="button" class="add-btn">
+
+          <button
+            type="button"
+            class="add-btn"
+          >
             + Adicionar Ingrediente
           </button>
+
         </div>
-        
+
+        <!-- PREPARO -->
+
         <div class="form-group">
+
           <label class="form-label required">
             Modo de Preparo
           </label>
-          
+
           <textarea
-          class="form-textarea"
-          placeholder="Descreva passo a passo..."
-          id="preparation-steps"
+            class="form-textarea"
+            placeholder="Descreva passo a passo..."
+            id="preparation-steps"
           ></textarea>
+
         </div>
-        
+
+        <!-- DIFICULDADE -->
+
         <div class="form-group">
-          
+
+          <label class="form-label required">
+            Dificuldade
+          </label>
+
+          <div class="difficulty-wrapper">
+
+            <input
+              type="range"
+              min="0"
+              max="2"
+              step="1"
+              value="1"
+              class="difficulty-range"
+              id="difficulty-range"
+            >
+
+            <div
+              class="difficulty-label"
+              id="difficulty-label"
+            >
+              Média
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="form-grid">
+
+          <!-- TEMPO -->
+
+          <div class="form-group">
+
+            <label class="form-label">
+              Tempo de Preparo (minutos)
+            </label>
+
+            <input
+              type="number"
+              class="form-input"
+              placeholder="Ex: 45"
+              min="1"
+              id="prep-time"
+            >
+
+          </div>
+
+          <!-- PORÇÕES -->
+
+          <div class="form-group">
+
+            <label class="form-label">
+              Quantidade de Porções
+            </label>
+
+            <input
+              type="number"
+              class="form-input"
+              placeholder="Ex: 4"
+              min="1"
+              id="servings"
+            >
+
+          </div>
+
+        </div>
+
+        <!-- AUTORES -->
+
+        <div class="form-group">
+
           <label class="form-label">
             Autores da Receita
           </label>
-          
+
           <div class="authors-box">
-            
-            <!-- Autores selecionados -->
-            <div class="selected-authors" id="selected-authors"></div>
-            
-            <!-- Input -->
+
+            <div
+              class="selected-authors"
+              id="selected-authors"
+            ></div>
+
             <input
-            type="text"
-            class="authors-input"
-            id="authors-input"
-            placeholder="Digite o nome do autor..."
-            autocomplete="off"
+              type="text"
+              class="authors-input"
+              id="authors-input"
+              placeholder="Digite o nome do autor..."
+              autocomplete="off"
             >
-            
-            <!-- Sugestões -->
-            <div class="authors-dropdown" id="authors-dropdown"></div>
-            
+
+            <div
+              class="authors-dropdown"
+              id="authors-dropdown"
+            ></div>
+
           </div>
-          
+
         </div>
-        
+
+        <!-- DICAS -->
+
         <div class="form-group">
+
           <label class="form-label">
             Dicas Extras
           </label>
-          
+
           <textarea
-          class="form-textarea"
-          placeholder="Ex: Sirva com queijo parmesão..."
-          id="extra-tips"
+            class="form-textarea"
+            placeholder="Ex: Sirva com queijo parmesão..."
+            id="extra-tips"
           ></textarea>
+
         </div>
-        
+
+        <!-- BOTÃO -->
+
         <div class="actions">
-          <button class="submit-btn" id="submit-btn">
+
+          <button
+            class="submit-btn"
+            id="submit-btn"
+          >
             Publicar Receita
           </button>
+
         </div>
-        
+
       </form>
-      
+
     </div>
+
   </main>
-  
+
   <script src="/js/create-recipe.js"></script>
 
-  <div style="display: none;" id="users-data">
+  <div
+    style="display: none;"
+    id="users-data"
+  >
     <%- JSON.stringify(users) %>
   </div>
 
   <script>
-    users = JSON.parse(document.getElementById('users-data').textContent)
+
+    users = JSON.parse(
+      document.getElementById('users-data').textContent
+    )
 
     renderSelectedUsers()
 
-    const recipeTitleInput = document.getElementById('recipe-title')
-    const recipeDescriptionInput = document.getElementById('recipe-description')
-    
-    const ingredientsList = document.getElementById('ingredients-list')
-    const addIngredientBtn = document.querySelector('.add-btn')
-    
-    const preparationStepsTextarea = document.getElementById('preparation-steps')
-    const extraTipsTextarea = document.getElementById('extra-tips')
-    
-    const imageInput = document.getElementById('recipe-image')
-    const preview = document.getElementById('upload-preview')
-    const placeholder = document.getElementById('upload-placeholder')
-    
-    const submitButton = document.getElementById('submit-btn')
-    
-    let file
-    
-    imageInput.addEventListener('change', (event) => {
-      file = event.target.files[0]
-      
-      if (!file) return
-      
-      const reader = new FileReader()
-      
-      reader.onload = (e) => {
-        preview.src = e.target.result
-        preview.style.display = 'block'
-        
-        placeholder.style.display = 'none'
+    const recipeTitleInput =
+      document.getElementById('recipe-title')
+
+    const recipeDescriptionInput =
+      document.getElementById('recipe-description')
+
+    const ingredientsList =
+      document.getElementById('ingredients-list')
+
+    const addIngredientBtn =
+      document.querySelector('.add-btn')
+
+    const preparationStepsTextarea =
+      document.getElementById('preparation-steps')
+
+    const extraTipsTextarea =
+      document.getElementById('extra-tips')
+
+    const imageInput =
+      document.getElementById('recipe-image')
+
+    const preview =
+      document.getElementById('upload-preview')
+
+    const placeholder =
+      document.getElementById('upload-placeholder')
+
+    const submitButton =
+      document.getElementById('submit-btn')
+
+    const difficultyRange =
+      document.getElementById('difficulty-range')
+
+    const difficultyLabel =
+      document.getElementById('difficulty-label')
+
+    const prepTimeInput =
+      document.getElementById('prep-time')
+
+    const servingsInput =
+      document.getElementById('servings')
+
+    const difficultyMap = {
+      0: {
+        label: 'Fácil',
+        value: 'EASY'
+      },
+
+      1: {
+        label: 'Média',
+        value: 'MEDIUM'
+      },
+
+      2: {
+        label: 'Difícil',
+        value: 'HARD'
       }
-      
-      reader.readAsDataURL(file)
-    })
+    }
+
+    let file
+
+    difficultyRange.addEventListener(
+      'input',
+      () => {
+
+        const difficulty =
+          difficultyMap[difficultyRange.value]
+
+        difficultyLabel.innerText =
+          difficulty.label
+
+      }
+    )
+
+    imageInput.addEventListener(
+      'change',
+      (event) => {
+
+        file = event.target.files[0]
+
+        if (!file) return
+
+        const reader = new FileReader()
+
+        reader.onload = (e) => {
+
+          preview.src = e.target.result
+
+          preview.style.display = 'block'
+
+          placeholder.style.display = 'none'
+
+        }
+
+        reader.readAsDataURL(file)
+
+      }
+    )
 
     addIngredientBtn.addEventListener(
       'click',
       () => {
-
-        console.log('Adicionando ingrediente');
 
         const row = document.createElement('div')
 
@@ -258,86 +478,176 @@
 
       }
     )
-    
-    submitButton.addEventListener('click', async(event) => {
-      event.preventDefault()
-      const title = recipeTitleInput.value
-      const description = recipeDescriptionInput.value ?? null
-      const categoryCheckboxes = document.querySelectorAll('input[name="categories"]:checked')
-      const categories = Array.from(categoryCheckboxes).map(cb => cb.value)
-      const preparationSteps = preparationStepsTextarea.value.split('\n').filter(line => line.trim() !== '')
-      const ingredients = Array.from(document.querySelectorAll('input[name="ingredient"]')).map(input => input.value).filter(value => value.trim() !== '')
-      const extraTips = extraTipsTextarea.value
-      
-      if(!title) {
-        alert('O título da receita é obrigatório!')
-        return
-      }
-      
-      if(!categories.length) {
-        alert('Selecione pelo menos uma categoria!')
-        return
-      }
-      
-      if(!preparationSteps.length) {
-        alert('O modo de preparo é obrigatório!')
-        return
-      }
-      
-      if(!ingredients.length) {
-        alert('Adicione pelo menos um ingrediente!')
-        return
-      }
-      
-      console.table({selectedUsers, title, description, categories, preparationSteps, extraTips, ingredients, file});
-      
-      const authToken = getCookie('session_token')
-      
-      console.log(authToken)
-      
-      const response = await axios.post('/api/recipes', {
-        title,
-        description,
-        category_ids: categories,
-        author_ids: selectedUsers.map(a => parseInt(a.id)),
-        instructions: preparationSteps,
-        extraTips,
-        ingredients,
-        tips: extraTips,
-        
-        // ! Para implementar
-        preparation_time: 45,
-        difficulty: 'MEDIUM',
-        servings: 4,
-        external_url: null,
-      }, {
-        headers: {
-          'Authorization': `${authToken}`
-        }
-      }).catch(err => err.response)
 
-      if(response.status !== 201) {
-        alert(response.data?.message || 'Erro ao publicar receita. Tente novamente.')
-        return
+    submitButton.addEventListener(
+      'click',
+      async(event) => {
+
+        event.preventDefault()
+
+        const title =
+          recipeTitleInput.value
+
+        const description =
+          recipeDescriptionInput.value ?? null
+
+        const categoryCheckboxes =
+          document.querySelectorAll(
+            'input[name="categories"]:checked'
+          )
+
+        const categories =
+          Array.from(categoryCheckboxes)
+            .map(cb => cb.value)
+
+        const preparationSteps =
+          preparationStepsTextarea.value
+            .split('\n')
+            .filter(line => line.trim() !== '')
+
+        const ingredients =
+          Array.from(
+            document.querySelectorAll(
+              'input[name="ingredient"]'
+            )
+          )
+          .map(input => input.value)
+          .filter(value => value.trim() !== '')
+
+        const extraTips =
+          extraTipsTextarea.value
+
+        const prepTime =
+          prepTimeInput.value
+            ? parseInt(prepTimeInput.value)
+            : null
+
+        const servings =
+          servingsInput.value
+            ? parseInt(servingsInput.value)
+            : null
+
+        const difficulty =
+          difficultyMap[
+            difficultyRange.value
+          ].value
+
+        if(!title) {
+          alert('O título da receita é obrigatório!')
+          return
+        }
+
+        if(!categories.length) {
+          alert('Selecione pelo menos uma categoria!')
+          return
+        }
+
+        if(!preparationSteps.length) {
+          alert('O modo de preparo é obrigatório!')
+          return
+        }
+
+        if(!ingredients.length) {
+          alert('Adicione pelo menos um ingrediente!')
+          return
+        }
+
+        const authToken =
+          getCookie('session_token')
+
+        const response =
+          await axios.post(
+            '/api/recipes',
+            {
+              title,
+              description,
+
+              category_ids: categories,
+
+              author_ids:
+                selectedUsers.map(
+                  a => parseInt(a.id)
+                ),
+
+              instructions:
+                preparationSteps,
+
+              extraTips,
+
+              ingredients,
+
+              tips: extraTips,
+
+              preparation_time:
+                prepTime && prepTime > 0
+                  ? prepTime
+                  : null,
+
+              difficulty,
+
+              servings:
+                servings && servings > 0
+                  ? servings
+                  : null,
+
+              external_url: null,
+            },
+            {
+              headers: {
+                'Authorization':
+                  `${authToken}`
+              }
+            }
+          )
+          .catch(err => err.response)
+
+        if(response.status !== 201) {
+
+          alert(
+            response.data?.message ||
+            'Erro ao publicar receita.'
+          )
+
+          return
+        }
+
+        const data = response.data
+
+        if(file) {
+
+          const formData =
+            new FormData()
+
+          formData.append(
+            'thumbnail',
+            file
+          )
+
+          await axios.post(
+            `/api/recipes/${data.id}/upload`,
+            formData,
+            {
+              headers: {
+                'Authorization':
+                  `${authToken}`,
+
+                'Content-Type':
+                  'multipart/form-data',
+              }
+            }
+          )
+
+        }
+
+        alert('Receita publicada com sucesso!')
+
+        window.location.href =
+          `/recipes/${data.id}`
+
       }
-      
-      const data = response.data
-      if(file) {
-        const formData = new FormData()
-        formData.append('thumbnail', file)
-        
-        console.log(formData);
-        
-        await axios.post(`/api/recipes/${data.id}/upload`, formData, {
-          headers: {
-            'Authorization': `${authToken}`,
-            'Content-Type': 'multipart/form-data',
-          }
-        })
-      }
-      
-      alert('Receita publicada com sucesso!')
-    })
+    )
+
   </script>
+
 </body>
 </html>

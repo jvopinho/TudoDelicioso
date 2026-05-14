@@ -14,6 +14,11 @@ export const EnvSchema = z.object({
   POSTGRES_PORT: z.coerce.number().default(5432),
   POSTGRES_ENDPOINT: z.string().default('localhost:5432'),
 
+  MONGO_ENDPOINT: z.string().default('localhost:27017'),
+  MONGO_PORT: z.coerce.number().default(27017),
+  MONGO_USERNAME: z.string().default('admin'),
+  MONGO_PASSWORD: z.string().default('password'),
+
   SESSION_JWT_SECRET: z.string(),
 })
 export type EnvSchema = z.infer<typeof EnvSchema>

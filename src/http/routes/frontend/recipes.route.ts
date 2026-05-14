@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-import { timeAgo } from '@/utils/time-utils'
 
 import { frontendAuthenticate } from '@/http/middlewares/auth-middleware'
 import { AdminService } from '@/services/admin-service'
@@ -37,27 +36,15 @@ recipesFrontendRoute.get('/:recipe_id', frontendAuthenticate({ onlyAuthenticated
   
   const recipe = await recipesService.getRecipeById(parseInt(req.params.recipe_id! as string))
 
+  if(!recipe) {
+    return res.redirect('/404')
+  }
+
   console.log(recipe)
 
   const similarRecipes = await recipesService.getRandomRecipes(3)
 
-  const comments = [
-    {
-      author: 'Jane Doe',
-      content: 'Essa receita é incrível! Meus amigos adoraram.',
-      ago: timeAgo(new Date().getTime() - 3600 * 1000 * 5), // 5 horas atrás
-    },
-    {
-      author: 'Alice Johnson',
-      content: 'Adorei essa receita! O sabor ficou incrível e a textura perfeita.',
-      ago: timeAgo(new Date().getTime() - 3600 * 1000 * 1), // 1 hora atrás
-    },
-    {
-      author: 'John Smith',
-      content: 'Fiz essa receita no fim de semana e foi um sucesso! Muito fácil de seguir.',
-      ago: timeAgo(new Date().getTime() - 3600 * 1000 * 24 * 2), // 2 dias atrás
-    },
-  ]
+  const comments = await recipesService.getComments(recipe.id)
 
   res.render('recipes/main', {
     recipe,

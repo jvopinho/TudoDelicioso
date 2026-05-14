@@ -2,19 +2,17 @@ import jwt from 'jsonwebtoken'
 
 import { AppRequest, AppResponse } from '@/@types/express'
 import { PasswordAdapter } from '@/adapters/password-adapter'
+import { User } from '@/database/sequelize/user'
 import { env } from '@/env'
 import { BodyMiddleware } from '@/http/middlewares/body-middleware'
-import { UsersRepository } from '@/repositories/users-repository'
 import { SignInDTO } from '@/schemas/auth-dto'
 
 export class AuthController {
-  constructor(private readonly usersRepository: UsersRepository) {}
-
   @BodyMiddleware(SignInDTO)
   async signIn(req: AppRequest, res: AppResponse) {
     const { email, password } = req.body as SignInDTO
 
-    const user = await this.usersRepository.findByEmail(email)
+    const user = await User.findOne({ where: { email } })
 
     if(!user) {
       return res.status(401).json({ message: 'Email ou senha inválidos' })

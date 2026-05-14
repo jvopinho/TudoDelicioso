@@ -3,9 +3,11 @@ import 'dotenv/config'
 import { startServer } from '@/http/app'
 
 import { PasswordAdapter } from './adapters/password-adapter'
+import { connectMongo } from './database/mongoose'
 import { User } from './database/sequelize/user'
 
 async function main() {
+  connectMongo()
   startServer()
 
   const adminUserAlreadyExists = await User.findOne({ 
