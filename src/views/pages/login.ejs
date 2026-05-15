@@ -92,6 +92,13 @@
           window.location.href = '/';
         } catch (error) {
           console.error(error);
+          const responseData = error.response ? error.response.data : null;
+
+          if (responseData && responseData.message) {
+            alert(responseData.message);
+          } else {
+            alert('Ocorreu um erro ao tentar fazer login. Por favor, tente novamente.');
+          }
         }
       });
     </script>
